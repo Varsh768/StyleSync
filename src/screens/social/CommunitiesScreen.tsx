@@ -10,6 +10,8 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SocialStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
+import { Community, getCommunityById } from '../../data/communities';
+import { Ionicons } from '@expo/vector-icons';
 
 type CommunitiesScreenNavigationProp = StackNavigationProp<SocialStackParamList, 'Communities'>;
 
@@ -17,14 +19,8 @@ interface Props {
   navigation: CommunitiesScreenNavigationProp;
 }
 
-interface Community {
-  id: string;
-  name: string;
-  description?: string;
-  location?: string;
-  memberCount: number;
-  createdAt: Date;
-}
+// HARDCODED: User's joined communities (for demo purposes)
+const JOINED_COMMUNITY_IDS = ['community-uw-madison', 'community-uiuc'];
 
 const CommunitiesScreen: React.FC<Props> = ({ navigation }) => {
   const { user } = useAuth();
@@ -32,9 +28,12 @@ const CommunitiesScreen: React.FC<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
 
   const loadCommunities = async () => {
-    // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
-    // Mock: Return empty array for now
-    setCommunities([]);
+    // FIREBASE COMMENTED OUT - Load hardcoded joined communities
+    const joinedCommunities = JOINED_COMMUNITY_IDS
+      .map(id => getCommunityById(id))
+      .filter((c): c is Community => c !== undefined);
+
+    setCommunities(joinedCommunities);
     setLoading(false);
   };
 
@@ -44,12 +43,20 @@ const CommunitiesScreen: React.FC<Props> = ({ navigation }) => {
 
   const renderCommunity = ({ item }: { item: Community }) => (
     <TouchableOpacity style={styles.communityCard}>
-      <View style={styles.communityInfo}>
-        <Text style={styles.communityName}>{item.name}</Text>
-        {item.location && <Text style={styles.communityLocation}>{item.location}</Text>}
-        {item.description && <Text style={styles.communityDescription}>{item.description}</Text>}
-        <Text style={styles.memberCount}>{item.memberCount} members</Text>
+      <View style={styles.communityIcon}>
+        <Ionicons name="school" size={32} color="#007AFF" />
       </View>
+      <View style={styles.communityInfo}>
+        <Text style={styles.communityName}>{item.shortName}</Text>
+        <Text style={styles.communityFullName}>{item.name}</Text>
+        <Text style={styles.communityLocation}>
+          <Ionicons name="location-outline" size={14} color="#666" /> {item.location}
+        </Text>
+        <Text style={styles.memberCount}>
+          <Ionicons name="people-outline" size={14} color="#999" /> {item.memberCount.toLocaleString()} members
+        </Text>
+      </View>
+      <Ionicons name="chevron-forward" size={24} color="#ccc" />
     </TouchableOpacity>
   );
 
@@ -88,28 +95,42 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   communityCard: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
     padding: 15,
-    marginBottom: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  communityIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#f0f8ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
   communityInfo: {
     flex: 1,
   },
   communityName: {
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 5,
+    fontWeight: '700',
+    marginBottom: 2,
+    color: '#000',
+  },
+  communityFullName: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 4,
   },
   communityLocation: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
-    marginBottom: 5,
-  },
-  communityDescription: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   memberCount: {
     fontSize: 12,

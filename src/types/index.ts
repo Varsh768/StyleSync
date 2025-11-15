@@ -75,6 +75,7 @@ export type SocialStackParamList = {
   CreateGroup: undefined;
   JoinGroup: undefined;
   JoinCommunity: undefined;
+  UserProfile: { userId: string };
 };
 
 export type NotificationsStackParamList = {

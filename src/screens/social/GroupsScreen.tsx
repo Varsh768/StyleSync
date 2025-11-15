@@ -17,13 +17,36 @@ interface Props {
   navigation: GroupsScreenNavigationProp;
 }
 
+interface GroupMember {
+  id: string;
+  name: string;
+  profileImageUrl?: string;
+}
+
 interface Group {
   id: string;
   name: string;
   description?: string;
   memberCount: number;
+  members: GroupMember[];
   createdAt: Date;
 }
+
+// HARDCODED: Besties group with Tanvi, Varsha, and Suha
+const MOCK_GROUPS: Group[] = [
+  {
+    id: 'group-besties-1',
+    name: 'Besties',
+    description: 'Your closest friends',
+    memberCount: 3,
+    members: [
+      { id: 'user-tanvi-1', name: 'Tanvi', profileImageUrl: '' },
+      { id: 'user-varsha-1', name: 'Varsha', profileImageUrl: '' },
+      { id: 'user-suha-1', name: 'Suha', profileImageUrl: '' },
+    ],
+    createdAt: new Date(),
+  },
+];
 
 const GroupsScreen: React.FC<Props> = ({ navigation }) => {
   const { user } = useAuth();
@@ -32,8 +55,8 @@ const GroupsScreen: React.FC<Props> = ({ navigation }) => {
 
   const loadGroups = async () => {
     // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
-    // Mock: Return empty array for now
-    setGroups([]);
+    // Mock: Return hardcoded Besties group
+    setGroups(MOCK_GROUPS);
     setLoading(false);
   };
 
@@ -42,13 +65,26 @@ const GroupsScreen: React.FC<Props> = ({ navigation }) => {
   }, [user]);
 
   const renderGroup = ({ item }: { item: Group }) => (
-    <TouchableOpacity style={styles.groupCard}>
+    <View style={styles.groupCard}>
       <View style={styles.groupInfo}>
         <Text style={styles.groupName}>{item.name}</Text>
         {item.description && <Text style={styles.groupDescription}>{item.description}</Text>}
         <Text style={styles.memberCount}>{item.memberCount} members</Text>
+        {item.members && item.members.length > 0 && (
+          <View style={styles.membersContainer}>
+            <Text style={styles.membersLabel}>Members:</Text>
+            {item.members.map((member, index) => (
+              <React.Fragment key={member.id}>
+                <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { userId: member.id })}>
+                  <Text style={styles.memberName}>{member.name}</Text>
+                </TouchableOpacity>
+                {index < item.members.length - 1 && <Text style={styles.memberSeparator}>, </Text>}
+              </React.Fragment>
+            ))}
+          </View>
+        )}
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -115,6 +151,27 @@ const styles = StyleSheet.create({
   memberCount: {
     fontSize: 12,
     color: '#999',
+  },
+  membersContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+    alignItems: 'center',
+  },
+  membersLabel: {
+    fontSize: 13,
+    color: '#333',
+    fontWeight: '500',
+    marginRight: 5,
+  },
+  memberName: {
+    fontSize: 13,
+    color: '#007AFF',
+    textDecorationLine: 'underline',
+  },
+  memberSeparator: {
+    fontSize: 13,
+    color: '#333',
   },
   emptyContainer: {
     flex: 1,
