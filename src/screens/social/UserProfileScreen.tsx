@@ -13,40 +13,64 @@ interface Props {
   route: UserProfileScreenRouteProp;
 }
 
-// HARDCODED: User profiles for Tanvi, Varsha, and Suha
-const MOCK_USER_PROFILES: { [key: string]: User & { bio?: string; closetItemCount?: number } } = {
-  'user-tanvi-1': {
-    id: 'user-tanvi-1',
-    name: 'Tanvi',
+// HARDCODED: User profiles for Tanya, Veronica, and Sarah
+const MOCK_USER_PROFILES: { [key: string]: User & { bio?: string; closetItemCount?: number; recentItems?: string[] } } = {
+  'user-tanya-1': {
+    id: 'user-tanya-1',
+    name: 'Tanya',
     phoneNumber: '+1234567891',
     school: 'UW-Madison',
-    profileImageUrl: '',
+    profileImageUrl: 'https://i.pravatar.cc/300?img=1',
     createdAt: new Date('2024-01-15'),
     contactsImported: true,
     bio: 'Fashion enthusiast 👗 Love sharing my wardrobe with friends!',
     closetItemCount: 24,
+    recentItems: [
+      'https://i.pinimg.com/1200x/74/31/9b/74319bdabc1f16ee0637b060beb4e136.jpg',
+      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400',
+      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400',
+      'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400',
+      'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400',
+      'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?w=400',
+    ],
   },
-  'user-varsha-1': {
-    id: 'user-varsha-1',
-    name: 'Varsha',
+  'user-veronica-1': {
+    id: 'user-veronica-1',
+    name: 'Veronica',
     phoneNumber: '+1234567892',
     school: 'UW-Madison',
-    profileImageUrl: '',
+    profileImageUrl: 'https://i.pravatar.cc/300?img=5',
     createdAt: new Date('2024-02-10'),
     contactsImported: true,
     bio: 'Always hunting for the perfect outfit ✨',
     closetItemCount: 18,
+    recentItems: [
+      'https://i.pinimg.com/736x/cb/31/15/cb3115f78656d74501dde4ae6c396423.jpg',
+      'https://i.pinimg.com/736x/c2/fb/c3/c2fbc332f1e556fabdcbed0c4e0924a6.jpg',
+      'https://i.pinimg.com/736x/2b/7a/32/2b7a3202925f1a70c176186c0f2b2fa5.jpg',
+      'https://i.pinimg.com/736x/94/b9/62/94b962da1ed23fc2cfa3b500d6af9972.jpg',
+      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400',
+      'https://images.unsplash.com/photo-1550614000-4895a10e1bfd?w=400',
+    ],
   },
-  'user-suha-1': {
-    id: 'user-suha-1',
-    name: 'Suha',
+  'user-sarah-1': {
+    id: 'user-sarah-1',
+    name: 'Sarah',
     phoneNumber: '+1234567893',
     school: 'UW-Madison',
-    profileImageUrl: '',
+    profileImageUrl: 'https://i.pravatar.cc/300?img=9',
     createdAt: new Date('2024-01-20'),
     contactsImported: true,
     bio: 'Sustainable fashion advocate 🌱 Happy to share!',
     closetItemCount: 31,
+    recentItems: [
+      'https://i.pinimg.com/736x/18/ac/b0/18acb04f49f6da88f0787e267955a56f.jpg',
+      'https://i.pinimg.com/736x/40/3b/43/403b433594634a25e79a3bb3c008f2de.jpg',
+      'https://i.pinimg.com/736x/ca/05/84/ca0584a1e875e02f2d3e0ef91d6f5749.jpg',
+      'https://i.pinimg.com/736x/4f/46/ce/4f46cea5decba78f63238b57bf9b7620.jpg',
+      'https://i.pinimg.com/736x/68/2e/76/682e767eff0bd00f097804ea086da384.jpg',
+      'https://i.pinimg.com/1200x/0c/26/e9/0c26e92d3c4ee05861d0241579ba6936.jpg',
+    ],
   },
 };
 
@@ -122,11 +146,19 @@ const UserProfileScreen: React.FC<Props> = ({ navigation, route }) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Recent Items</Text>
         <View style={styles.placeholderGrid}>
-          {[1, 2, 3, 4, 5, 6].map((item) => (
-            <View key={item} style={styles.itemPlaceholder}>
-              <Ionicons name="image-outline" size={30} color="#ccc" />
-            </View>
-          ))}
+          {userProfile.recentItems && userProfile.recentItems.length > 0 ? (
+            userProfile.recentItems.map((imageUrl, index) => (
+              <TouchableOpacity key={index} style={styles.itemImageContainer}>
+                <Image source={{ uri: imageUrl }} style={styles.itemImage} />
+              </TouchableOpacity>
+            ))
+          ) : (
+            [1, 2, 3, 4, 5, 6].map((item) => (
+              <View key={item} style={styles.itemPlaceholder}>
+                <Ionicons name="image-outline" size={30} color="#ccc" />
+              </View>
+            ))
+          )}
         </View>
       </View>
     </ScrollView>
@@ -282,6 +314,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#e0e0e0',
+  },
+  itemImageContainer: {
+    width: '30%',
+    aspectRatio: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  itemImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   errorText: {
     fontSize: 16,

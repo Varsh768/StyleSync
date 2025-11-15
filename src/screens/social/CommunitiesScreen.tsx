@@ -20,7 +20,7 @@ interface Props {
 }
 
 // HARDCODED: User's joined communities (for demo purposes)
-const JOINED_COMMUNITY_IDS = ['community-uw-madison', 'community-uiuc'];
+const JOINED_COMMUNITY_IDS = ['community-uw-madison'];
 
 const CommunitiesScreen: React.FC<Props> = ({ navigation }) => {
   const { user } = useAuth();

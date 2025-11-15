@@ -72,10 +72,12 @@ export type SocialStackParamList = {
   Groups: undefined;
   Communities: undefined;
   AddFriends: undefined;
+  FriendRequests: undefined;
   CreateGroup: undefined;
   JoinGroup: undefined;
   JoinCommunity: undefined;
   UserProfile: { userId: string };
+  GroupDetail: { groupId: string; groupName: string };
 };
 
 export type NotificationsStackParamList = {

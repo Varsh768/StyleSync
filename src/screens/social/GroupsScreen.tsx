@@ -6,10 +6,13 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
+  Linking,
+  Alert,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SocialStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
 
 type GroupsScreenNavigationProp = StackNavigationProp<SocialStackParamList, 'Groups'>;
 
@@ -32,7 +35,7 @@ interface Group {
   createdAt: Date;
 }
 
-// HARDCODED: Besties group with Tanvi, Varsha, and Suha
+// HARDCODED: Besties group with Tanya, Veronica, and Sarah
 const MOCK_GROUPS: Group[] = [
   {
     id: 'group-besties-1',
@@ -40,9 +43,9 @@ const MOCK_GROUPS: Group[] = [
     description: 'Your closest friends',
     memberCount: 3,
     members: [
-      { id: 'user-tanvi-1', name: 'Tanvi', profileImageUrl: '' },
-      { id: 'user-varsha-1', name: 'Varsha', profileImageUrl: '' },
-      { id: 'user-suha-1', name: 'Suha', profileImageUrl: '' },
+      { id: 'user-tanya-1', name: 'Tanya', profileImageUrl: '' },
+      { id: 'user-veronica-1', name: 'Veronica', profileImageUrl: '' },
+      { id: 'user-sarah-1', name: 'Sarah', profileImageUrl: '' },
     ],
     createdAt: new Date(),
   },
@@ -64,27 +67,44 @@ const GroupsScreen: React.FC<Props> = ({ navigation }) => {
     loadGroups();
   }, [user]);
 
+  const handleInviteToGroup = async (groupName: string) => {
+    const message = `Hey! 👋 I'm using StyleSync to share my closet with friends. Want to join my "${groupName}" group? We swap outfits, save money, and help the planet! 👗✨`;
+    const smsUrl = `sms:&body=${encodeURIComponent(message)}`;
+
+    try {
+      const canOpen = await Linking.canOpenURL(smsUrl);
+      if (canOpen) {
+        await Linking.openURL(smsUrl);
+      } else {
+        Alert.alert('Unable to open Messages', 'Please check your device settings.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to open Messages app.');
+    }
+  };
+
   const renderGroup = ({ item }: { item: Group }) => (
-    <View style={styles.groupCard}>
+    <TouchableOpacity
+      style={styles.groupCard}
+      onPress={() => navigation.navigate('GroupDetail', { groupId: item.id, groupName: item.name })}
+    >
       <View style={styles.groupInfo}>
         <Text style={styles.groupName}>{item.name}</Text>
         {item.description && <Text style={styles.groupDescription}>{item.description}</Text>}
         <Text style={styles.memberCount}>{item.memberCount} members</Text>
-        {item.members && item.members.length > 0 && (
-          <View style={styles.membersContainer}>
-            <Text style={styles.membersLabel}>Members:</Text>
-            {item.members.map((member, index) => (
-              <React.Fragment key={member.id}>
-                <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { userId: member.id })}>
-                  <Text style={styles.memberName}>{member.name}</Text>
-                </TouchableOpacity>
-                {index < item.members.length - 1 && <Text style={styles.memberSeparator}>, </Text>}
-              </React.Fragment>
-            ))}
-          </View>
-        )}
+        <TouchableOpacity
+          style={styles.inviteButton}
+          onPress={(e) => {
+            e.stopPropagation();
+            handleInviteToGroup(item.name);
+          }}
+        >
+          <Ionicons name="person-add-outline" size={16} color="#007AFF" />
+          <Text style={styles.inviteButtonText}>Invite Member</Text>
+        </TouchableOpacity>
       </View>
-    </View>
+      <Ionicons name="chevron-forward" size={24} color="#ccc" />
+    </TouchableOpacity>
   );
 
   return (
@@ -130,6 +150,8 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   groupCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#f9f9f9',
     borderRadius: 8,
     padding: 15,
@@ -172,6 +194,24 @@ const styles = StyleSheet.create({
   memberSeparator: {
     fontSize: 13,
     color: '#333',
+  },
+  inviteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#F0F8FF',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#007AFF',
+    alignSelf: 'flex-start',
+    gap: 6,
+  },
+  inviteButtonText: {
+    fontSize: 14,
+    color: '#007AFF',
+    fontWeight: '600',
   },
   emptyContainer: {
     flex: 1,
