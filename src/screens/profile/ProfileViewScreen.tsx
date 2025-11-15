@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ProfileStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../services/firebase';
+// FIREBASE COMMENTED OUT FOR TESTING
+// import { signOut } from 'firebase/auth';
+// import { auth } from '../../services/firebase';
 
 type ProfileViewScreenNavigationProp = StackNavigationProp<ProfileStackParamList, 'ProfileView'>;
 
@@ -17,7 +18,10 @@ const ProfileViewScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
+      // await signOut(auth);
+      console.log('Mock: Sign out called');
+      Alert.alert('Mock Mode', 'Sign out (Firebase disabled)');
     } catch (error) {
       console.error('Error signing out:', error);
     }

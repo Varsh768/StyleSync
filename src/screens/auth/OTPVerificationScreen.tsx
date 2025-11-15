@@ -12,8 +12,9 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../types';
-import { signInWithCredential, PhoneAuthProvider } from 'firebase/auth';
-import { auth } from '../../services/firebase';
+// FIREBASE COMMENTED OUT FOR TESTING
+// import { signInWithCredential, PhoneAuthProvider } from 'firebase/auth';
+// import { auth } from '../../services/firebase';
 
 type OTPVerificationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'OTPVerification'>;
 type OTPVerificationScreenRouteProp = RouteProp<RootStackParamList, 'OTPVerification'>;
@@ -36,18 +37,19 @@ const OTPVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
 
     setLoading(true);
     try {
-      const credential = PhoneAuthProvider.credential(verificationId, otp);
-      await signInWithCredential(auth, credential);
-
-      // Check if user profile exists
-      const { doc, getDoc } = await import('firebase/firestore');
-      const { db } = await import('../../services/firebase');
-      const userDoc = await getDoc(doc(db, 'users', auth.currentUser!.uid));
-
-      if (!userDoc.exists()) {
-        navigation.navigate('Onboarding');
-      }
-      // If user exists, navigation will be handled by AppNavigator
+      // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
+      // const credential = PhoneAuthProvider.credential(verificationId, otp);
+      // await signInWithCredential(auth, credential);
+      // const { doc, getDoc } = await import('firebase/firestore');
+      // const { db } = await import('../../services/firebase');
+      // const userDoc = await getDoc(doc(db, 'users', auth.currentUser!.uid));
+      // if (!userDoc.exists()) {
+      //   navigation.navigate('Onboarding');
+      // }
+      
+      // Mock: Accept any 6-digit OTP and go to onboarding
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      navigation.navigate('Onboarding');
     } catch (error: any) {
       console.error('Error verifying OTP:', error);
       Alert.alert('Error', error.message || 'Invalid OTP. Please try again.');

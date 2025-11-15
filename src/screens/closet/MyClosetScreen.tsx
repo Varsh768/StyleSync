@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ClosetStackParamList } from '../../types';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import { db } from '../../services/firebase';
+// FIREBASE COMMENTED OUT FOR TESTING
+// import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+// import { db } from '../../services/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { ClosetItem } from '../../types';
 
@@ -30,19 +31,23 @@ const MyClosetScreen: React.FC<Props> = ({ navigation }) => {
     if (!user) return;
 
     try {
-      const q = query(
-        collection(db, 'closet_items'),
-        where('ownerId', '==', user.id),
-        where('isActive', '==', true),
-        orderBy('createdAt', 'desc')
-      );
-      const snapshot = await getDocs(q);
-      const itemsData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-      })) as ClosetItem[];
-      setItems(itemsData);
+      // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
+      // const q = query(
+      //   collection(db, 'closet_items'),
+      //   where('ownerId', '==', user.id),
+      //   where('isActive', '==', true),
+      //   orderBy('createdAt', 'desc')
+      // );
+      // const snapshot = await getDocs(q);
+      // const itemsData = snapshot.docs.map((doc) => ({
+      //   id: doc.id,
+      //   ...doc.data(),
+      //   createdAt: doc.data().createdAt?.toDate() || new Date(),
+      // })) as ClosetItem[];
+      // setItems(itemsData);
+      
+      // Mock: Return empty array
+      setItems([]);
     } catch (error) {
       console.error('Error loading items:', error);
     } finally {

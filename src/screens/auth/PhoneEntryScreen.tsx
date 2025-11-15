@@ -11,8 +11,9 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types';
-import { RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider } from 'firebase/auth';
-import { auth } from '../../services/firebase';
+// FIREBASE COMMENTED OUT FOR TESTING
+// import { RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider } from 'firebase/auth';
+// import { auth } from '../../services/firebase';
 
 type PhoneEntryScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PhoneEntry'>;
 
@@ -38,19 +39,21 @@ const PhoneEntryScreen: React.FC<Props> = ({ navigation }) => {
 
     setLoading(true);
     try {
-      // Note: In production, you may need to set up reCAPTCHA verifier
-      // For now, using a simplified approach
-      const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {
-          // reCAPTCHA solved
-        },
-      });
-
-      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, recaptchaVerifier);
+      // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
+      // const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      //   size: 'invisible',
+      //   callback: () => {
+      //     // reCAPTCHA solved
+      //   },
+      // });
+      // const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, recaptchaVerifier);
+      
+      // Mock: Simulate OTP send
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
       navigation.navigate('OTPVerification', {
         phoneNumber: formattedPhone,
-        verificationId: confirmationResult.verificationId,
+        verificationId: 'mock-verification-id',
       });
     } catch (error: any) {
       console.error('Error sending OTP:', error);

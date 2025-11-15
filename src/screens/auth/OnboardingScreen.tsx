@@ -11,11 +11,13 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types';
-import { doc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { auth, db, storage } from '../../services/firebase';
+// FIREBASE COMMENTED OUT FOR TESTING
+// import { doc, setDoc } from 'firebase/firestore';
+// import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+// import { auth, db, storage } from '../../services/firebase';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../context/AuthContext';
+import { User } from '../../types';
 
 type OnboardingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Onboarding'>;
 
@@ -24,7 +26,7 @@ interface Props {
 }
 
 const OnboardingScreen: React.FC<Props> = () => {
-  const { refreshUser } = useAuth();
+  const { refreshUser, setMockUser } = useAuth();
   const [name, setName] = useState('');
   const [school, setSchool] = useState('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -57,33 +59,47 @@ const OnboardingScreen: React.FC<Props> = () => {
 
     setLoading(true);
     try {
-      const user = auth.currentUser;
-      if (!user) {
-        Alert.alert('Error', 'User not authenticated');
-        return;
-      }
-
-      let profileImageUrl = '';
-      if (profileImage) {
-        // Upload profile image
-        const response = await fetch(profileImage);
-        const blob = await response.blob();
-        const imageRef = ref(storage, `profiles/${user.uid}`);
-        await uploadBytes(imageRef, blob);
-        profileImageUrl = await getDownloadURL(imageRef);
-      }
-
-      // Create user document
-      await setDoc(doc(db, 'users', user.uid), {
-        phoneNumber: user.phoneNumber || '',
+      // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
+      // const user = auth.currentUser;
+      // if (!user) {
+      //   Alert.alert('Error', 'User not authenticated');
+      //   return;
+      // }
+      // let profileImageUrl = '';
+      // if (profileImage) {
+      //   const response = await fetch(profileImage);
+      //   const blob = await response.blob();
+      //   const imageRef = ref(storage, `profiles/${user.uid}`);
+      //   await uploadBytes(imageRef, blob);
+      //   profileImageUrl = await getDownloadURL(imageRef);
+      // }
+      // await setDoc(doc(db, 'users', user.uid), {
+      //   phoneNumber: user.phoneNumber || '',
+      //   name: name.trim(),
+      //   school: school.trim(),
+      //   profileImageUrl,
+      //   createdAt: new Date(),
+      //   contactsImported: false,
+      // });
+      
+      // Mock: Simulate save and create mock user
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      // Create mock user with the entered data
+      const mockUser: User = {
+        id: 'mock-user-' + Date.now(),
+        phoneNumber: '+1234567890', // Mock phone number
         name: name.trim(),
         school: school.trim(),
-        profileImageUrl,
+        profileImageUrl: profileImage || '',
         createdAt: new Date(),
         contactsImported: false,
-      });
-
-      await refreshUser();
+      };
+      
+      // Set the user to trigger navigation to main app
+      setMockUser(mockUser);
+      
+      // Navigation will happen automatically via AppNavigator when user is set
     } catch (error: any) {
       console.error('Error completing onboarding:', error);
       Alert.alert('Error', error.message || 'Failed to complete setup. Please try again.');
