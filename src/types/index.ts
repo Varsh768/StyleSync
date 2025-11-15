@@ -12,6 +12,7 @@ export interface ClosetItem {
   id: string;
   ownerId: string;
   images: string[];
+  title: string;
   brand?: string;
   size?: string;
   category: string;

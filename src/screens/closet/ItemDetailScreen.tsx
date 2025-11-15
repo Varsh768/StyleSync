@@ -11,10 +11,9 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { ClosetStackParamList, RequestsStackParamList } from '../../types';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../services/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { ClosetItem } from '../../types';
+import { getClosetItem } from '../../services/localStorage';
 
 type ItemDetailScreenNavigationProp = StackNavigationProp<ClosetStackParamList, 'ItemDetail'>;
 type ItemDetailScreenRouteProp = RouteProp<ClosetStackParamList, 'ItemDetail'>;
@@ -37,14 +36,23 @@ const ItemDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const loadItem = async () => {
     try {
-      const itemDoc = await getDoc(doc(db, 'closet_items', itemId));
-      if (itemDoc.exists()) {
-        const data = itemDoc.data();
+      // Load item from local storage (hardcoded, no Firebase)
+      const storedItem = await getClosetItem(itemId);
+      if (storedItem) {
         setItem({
-          id: itemDoc.id,
-          ...data,
-          createdAt: data.createdAt?.toDate() || new Date(),
-        } as ClosetItem);
+          id: storedItem.id,
+          ownerId: storedItem.ownerId,
+          images: storedItem.images,
+          title: storedItem.title,
+          category: storedItem.category,
+          brand: storedItem.brand,
+          size: storedItem.size,
+          notes: storedItem.notes,
+          isActive: storedItem.isActive,
+          createdAt: new Date(storedItem.createdAt),
+        });
+      } else {
+        Alert.alert('Error', 'Item not found');
       }
     } catch (error) {
       console.error('Error loading item:', error);
@@ -86,10 +94,17 @@ const ItemDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       )}
 
       <View style={styles.content}>
+        <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.category}>{item.category}</Text>
         {item.brand && <Text style={styles.brand}>{item.brand}</Text>}
         {item.size && <Text style={styles.size}>Size: {item.size}</Text>}
-        {item.notes && <Text style={styles.notes}>{item.notes}</Text>}
+        
+        {item.notes && (
+          <View style={styles.notesSection}>
+            <Text style={styles.notesLabel}>Notes:</Text>
+            <Text style={styles.notes}>{item.notes}</Text>
+          </View>
+        )}
 
         {isOwnItem ? (
           <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
@@ -118,10 +133,18 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
   },
-  category: {
-    fontSize: 24,
+  title: {
+    fontSize: 28,
     fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#000',
+  },
+  category: {
+    fontSize: 16,
+    color: '#666',
     marginBottom: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   brand: {
     fontSize: 18,
@@ -132,10 +155,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+  notesSection: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  notesLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#333',
+  },
   notes: {
     fontSize: 16,
     color: '#666',
-    marginBottom: 20,
+    lineHeight: 22,
   },
   editButton: {
     backgroundColor: '#007AFF',

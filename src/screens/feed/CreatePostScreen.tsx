@@ -11,11 +11,13 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FeedStackParamList } from '../../types';
-import { collection, addDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../services/firebase';
+// FIREBASE COMMENTED OUT FOR TESTING
+// import { collection, addDoc } from 'firebase/firestore';
+// import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+// import { db, storage } from '../../services/firebase';
 import { useAuth } from '../../context/AuthContext';
 import * as ImagePicker from 'expo-image-picker';
+import { savePost } from '../../services/localStorage';
 
 type CreatePostScreenNavigationProp = StackNavigationProp<FeedStackParamList, 'CreatePost'>;
 
@@ -68,13 +70,14 @@ const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const uploadImage = async (uri: string, postId: string, index: number): Promise<string> => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const imageRef = ref(storage, `posts/${postId}/${index}`);
-    await uploadBytes(imageRef, blob);
-    return await getDownloadURL(imageRef);
-  };
+  // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
+  // const uploadImage = async (uri: string, postId: string, index: number): Promise<string> => {
+  //   const response = await fetch(uri);
+  //   const blob = await response.blob();
+  //   const imageRef = ref(storage, `posts/${postId}/${index}`);
+  //   await uploadBytes(imageRef, blob);
+  //   return await getDownloadURL(imageRef);
+  // };
 
   const handlePost = async () => {
     if (!user) {
@@ -89,24 +92,16 @@ const CreatePostScreen: React.FC<Props> = ({ navigation }) => {
 
     setLoading(true);
     try {
-      // Create post document first
-      const postRef = await addDoc(collection(db, 'posts'), {
+      // FIREBASE COMMENTED OUT - HARDCODED IMPLEMENTATION
+      // Save post to local storage (hardcoded, no Firebase)
+      await savePost({
         authorId: user.id,
-        imageUrls: [],
-        caption: caption.trim() || null,
+        authorName: user.name, // Use user's name from auth context
+        imageUrls: images, // Store local image URIs directly
+        caption: caption.trim() || undefined,
         taggedItemIds: [],
         visibility: 'friends',
-        createdAt: new Date(),
       });
-
-      // Upload images
-      const imageUrls = await Promise.all(
-        images.map((uri, index) => uploadImage(uri, postRef.id, index))
-      );
-
-      // Update post with image URLs
-      const { updateDoc } = await import('firebase/firestore');
-      await updateDoc(postRef, { imageUrls });
 
       Alert.alert('Success', 'Post created!', [
         { text: 'OK', onPress: () => navigation.goBack() },

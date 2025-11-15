@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -10,11 +11,9 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ClosetStackParamList } from '../../types';
-// FIREBASE COMMENTED OUT FOR TESTING
-// import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-// import { db } from '../../services/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { ClosetItem } from '../../types';
+import { getClosetItems, StoredClosetItem } from '../../services/localStorage';
 
 type MyClosetScreenNavigationProp = StackNavigationProp<ClosetStackParamList, 'MyCloset'>;
 
@@ -31,23 +30,26 @@ const MyClosetScreen: React.FC<Props> = ({ navigation }) => {
     if (!user) return;
 
     try {
-      // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
-      // const q = query(
-      //   collection(db, 'closet_items'),
-      //   where('ownerId', '==', user.id),
-      //   where('isActive', '==', true),
-      //   orderBy('createdAt', 'desc')
-      // );
-      // const snapshot = await getDocs(q);
-      // const itemsData = snapshot.docs.map((doc) => ({
-      //   id: doc.id,
-      //   ...doc.data(),
-      //   createdAt: doc.data().createdAt?.toDate() || new Date(),
-      // })) as ClosetItem[];
-      // setItems(itemsData);
+      // Load items from local storage (hardcoded, no Firebase)
+      const storedItems = await getClosetItems(user.id);
       
-      // Mock: Return empty array
-      setItems([]);
+      // Convert stored items to ClosetItem format
+      const itemsData: ClosetItem[] = storedItems
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .map((item) => ({
+          id: item.id,
+          ownerId: item.ownerId,
+          images: item.images,
+          title: item.title,
+          category: item.category,
+          brand: item.brand,
+          size: item.size,
+          notes: item.notes,
+          isActive: item.isActive,
+          createdAt: new Date(item.createdAt),
+        }));
+      
+      setItems(itemsData);
     } catch (error) {
       console.error('Error loading items:', error);
     } finally {
@@ -58,6 +60,13 @@ const MyClosetScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     loadItems();
   }, [user]);
+
+  // Reload items when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      loadItems();
+    }, [user])
+  );
 
   const renderItem = ({ item }: { item: ClosetItem }) => (
     <TouchableOpacity
@@ -71,8 +80,12 @@ const MyClosetScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.placeholderText}>No Image</Text>
         </View>
       )}
-      <Text style={styles.itemCategory}>{item.category}</Text>
-      {item.brand && <Text style={styles.itemBrand}>{item.brand}</Text>}
+      <View style={styles.itemInfo}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemCategory}>{item.category}</Text>
+        {item.brand && <Text style={styles.itemBrand}>{item.brand}</Text>}
+        {item.size && <Text style={styles.itemSize}>Size: {item.size}</Text>}
+      </View>
     </TouchableOpacity>
   );
 
@@ -159,14 +172,26 @@ const styles = StyleSheet.create({
   placeholderText: {
     color: '#999',
   },
-  itemCategory: {
+  itemInfo: {
     padding: 10,
-    fontSize: 14,
-    fontWeight: '600',
+  },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#000',
+  },
+  itemCategory: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
   },
   itemBrand: {
-    paddingHorizontal: 10,
-    paddingBottom: 10,
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 2,
+  },
+  itemSize: {
     fontSize: 12,
     color: '#666',
   },

@@ -12,12 +12,10 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { ClosetStackParamList } from '../../types';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage } from '../../services/firebase';
 import { useAuth } from '../../context/AuthContext';
 import * as ImagePicker from 'expo-image-picker';
-import { Picker } from '@react-native-picker/picker';
+import { getClosetItem, updateClosetItem, deleteClosetItem } from '../../services/localStorage';
+import CategoryDropdown from '../../components/CategoryDropdown';
 
 const CATEGORIES = [
   'Top',
@@ -43,6 +41,7 @@ const EditItemScreen: React.FC<Props> = ({ navigation, route }) => {
   const { itemId } = route.params;
   const { user } = useAuth();
   const [images, setImages] = useState<string[]>([]);
+  const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [brand, setBrand] = useState('');
   const [size, setSize] = useState('');
@@ -56,14 +55,17 @@ const EditItemScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const loadItem = async () => {
     try {
-      const itemDoc = await getDoc(doc(db, 'closet_items', itemId));
-      if (itemDoc.exists()) {
-        const data = itemDoc.data();
-        setImages(data.images || []);
-        setCategory(data.category || '');
-        setBrand(data.brand || '');
-        setSize(data.size || '');
-        setNotes(data.notes || '');
+      // Load item from local storage (hardcoded, no Firebase)
+      const storedItem = await getClosetItem(itemId);
+      if (storedItem) {
+        setImages(storedItem.images || []);
+        setTitle(storedItem.title || '');
+        setCategory(storedItem.category || '');
+        setBrand(storedItem.brand || '');
+        setSize(storedItem.size || '');
+        setNotes(storedItem.notes || '');
+      } else {
+        Alert.alert('Error', 'Item not found');
       }
     } catch (error) {
       console.error('Error loading item:', error);
@@ -96,14 +98,6 @@ const EditItemScreen: React.FC<Props> = ({ navigation, route }) => {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const uploadImage = async (uri: string, itemId: string, index: number): Promise<string> => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const imageRef = ref(storage, `closet_items/${itemId}/${index}`);
-    await uploadBytes(imageRef, blob);
-    return await getDownloadURL(imageRef);
-  };
-
   const handleSave = async () => {
     if (!user) {
       Alert.alert('Error', 'User not authenticated');
@@ -115,6 +109,11 @@ const EditItemScreen: React.FC<Props> = ({ navigation, route }) => {
       return;
     }
 
+    if (!title.trim()) {
+      Alert.alert('Error', 'Please enter a title for the item');
+      return;
+    }
+
     if (!category) {
       Alert.alert('Error', 'Please select a category');
       return;
@@ -122,22 +121,14 @@ const EditItemScreen: React.FC<Props> = ({ navigation, route }) => {
 
     setSaving(true);
     try {
-      // Upload new local images
-      const localImages = images.filter((img) => !img.startsWith('http'));
-      const existingImages = images.filter((img) => img.startsWith('http'));
-
-      const uploadedUrls = await Promise.all(
-        localImages.map((uri, index) => uploadImage(uri, itemId, existingImages.length + index))
-      );
-
-      const allImageUrls = [...existingImages, ...uploadedUrls];
-
-      await updateDoc(doc(db, 'closet_items', itemId), {
-        images: allImageUrls,
+      // Update item in local storage (hardcoded, no Firebase)
+      await updateClosetItem(itemId, {
+        images: images, // Store local image URIs
+        title: title.trim(),
         category,
-        brand: brand.trim() || null,
-        size: size.trim() || null,
-        notes: notes.trim() || null,
+        brand: brand.trim() || undefined,
+        size: size.trim() || undefined,
+        notes: notes.trim() || undefined,
       });
 
       Alert.alert('Success', 'Item updated!', [
@@ -159,7 +150,8 @@ const EditItemScreen: React.FC<Props> = ({ navigation, route }) => {
         style: 'destructive',
         onPress: async () => {
           try {
-            await updateDoc(doc(db, 'closet_items', itemId), { isActive: false });
+            // Delete item from local storage (hardcoded, no Firebase)
+            await deleteClosetItem(itemId);
             Alert.alert('Success', 'Item deleted', [
               { text: 'OK', onPress: () => navigation.goBack() },
             ]);
@@ -203,15 +195,24 @@ const EditItemScreen: React.FC<Props> = ({ navigation, route }) => {
       </View>
 
       <View style={styles.section}>
+        <Text style={styles.label}>Title *</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="e.g., Blue Denim Jacket, Red Summer Dress"
+          placeholderTextColor="#999"
+          value={title}
+          onChangeText={setTitle}
+        />
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.label}>Category *</Text>
-        <View style={styles.pickerContainer}>
-          <Picker selectedValue={category} onValueChange={setCategory} style={styles.picker}>
-            <Picker.Item label="Select category" value="" />
-            {CATEGORIES.map((cat) => (
-              <Picker.Item key={cat} label={cat} value={cat} />
-            ))}
-          </Picker>
-        </View>
+        <CategoryDropdown
+          selectedValue={category}
+          onValueChange={setCategory}
+          categories={CATEGORIES}
+          placeholder="Select category"
+        />
       </View>
 
       <View style={styles.section}>
@@ -320,15 +321,6 @@ const styles = StyleSheet.create({
   addImageText: {
     fontSize: 24,
     color: '#999',
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  picker: {
-    height: 50,
   },
   input: {
     borderWidth: 1,
