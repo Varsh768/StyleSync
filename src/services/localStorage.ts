@@ -123,3 +123,45 @@ export const getPosts = async (): Promise<StoredPost[]> => {
   }
 };
 
+// Notifications storage
+const NOTIFICATIONS_KEY = '@stylesync:notifications';
+
+export interface StoredNotification {
+  id: string;
+  type: 'friend_request' | 'borrow_request' | 'like';
+  title: string;
+  message: string;
+  userId?: string;
+  userName?: string;
+  postId?: string;
+  requestId?: string;
+  read: boolean;
+  createdAt: string;
+}
+
+const NOTIFICATIONS_VIEWED_KEY = '@stylesync:notifications_viewed';
+
+export const getUnreadNotificationCount = async (): Promise<number> => {
+  try {
+    // Check if notifications have been viewed
+    const viewed = await AsyncStorage.getItem(NOTIFICATIONS_VIEWED_KEY);
+    if (viewed === 'true') {
+      return 0; // All notifications have been viewed
+    }
+    // If not viewed yet, return count from hardcoded notifications (3 unread)
+    return 3;
+  } catch (error) {
+    console.error('Error getting unread notification count:', error);
+    // Return default count from hardcoded notifications
+    return 3;
+  }
+};
+
+export const markNotificationsAsViewed = async (): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(NOTIFICATIONS_VIEWED_KEY, 'true');
+  } catch (error) {
+    console.error('Error marking notifications as viewed:', error);
+  }
+};
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,13 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
+  ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { NotificationsStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
+import { useFocusEffect } from '@react-navigation/native';
+import { markNotificationsAsViewed } from '../../services/localStorage';
 
 type NotificationsScreenNavigationProp = StackNavigationProp<
   NotificationsStackParamList,
@@ -42,15 +45,107 @@ const NotificationsScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   const loadNotifications = async () => {
-    // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
-    // Mock: Return empty array for now
-    setNotifications([]);
-    setLoading(false);
+    // FIREBASE COMMENTED OUT - HARDCODED DATA FOR TESTING
+    try {
+      // Hardcoded notifications
+      const hardcodedNotifications: Notification[] = [
+        {
+          id: 'notif-1',
+          type: 'like',
+          title: 'Veronica liked your post',
+          message: 'Veronica liked your recent post',
+          userName: 'Veronica',
+          userId: 'veronica-id',
+          postId: 'post-1',
+          read: false,
+          createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+        },
+        {
+          id: 'notif-2',
+          type: 'friend_request',
+          title: 'Jessica requested to be your friend',
+          message: 'Jessica wants to connect with you',
+          userName: 'Jessica',
+          userId: 'jessica-id',
+          read: false,
+          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        },
+        {
+          id: 'notif-3',
+          type: 'borrow_request',
+          title: 'Suha approved your request to borrow an item',
+          message: 'Your request to borrow the Blue Denim Jacket has been approved',
+          userName: 'Suha',
+          userId: 'suha-id',
+          requestId: 'request-1',
+          read: false,
+          createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+        },
+        {
+          id: 'notif-4',
+          type: 'like',
+          title: 'Sarah liked your post',
+          message: 'Sarah liked your recent post',
+          userName: 'Sarah',
+          userId: 'sarah-id',
+          postId: 'post-2',
+          read: true,
+          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+        },
+        {
+          id: 'notif-5',
+          type: 'friend_request',
+          title: 'Tanya requested to be your friend',
+          message: 'Tanya wants to connect with you',
+          userName: 'Tanya',
+          userId: 'tanya-id',
+          read: true,
+          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        },
+        {
+          id: 'notif-6',
+          type: 'borrow_request',
+          title: 'Veronica requested to borrow an item',
+          message: 'Veronica wants to borrow your Red Summer Dress',
+          userName: 'Veronica',
+          userId: 'veronica-id',
+          requestId: 'request-2',
+          read: true,
+          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+        },
+        {
+          id: 'notif-7',
+          type: 'like',
+          title: 'Jessica liked your post',
+          message: 'Jessica liked your recent post',
+          userName: 'Jessica',
+          userId: 'jessica-id',
+          postId: 'post-3',
+          read: true,
+          createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 days ago
+        },
+      ];
+
+      // Sort by createdAt (newest first)
+      hardcodedNotifications.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      setNotifications(hardcodedNotifications);
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     loadNotifications();
   }, [user]);
+
+  // Mark notifications as viewed when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      markNotificationsAsViewed();
+    }, [])
+  );
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -63,6 +158,16 @@ const NotificationsScreen: React.FC<Props> = ({ navigation }) => {
       default:
         return '🔔';
     }
+  };
+
+  const getTimeAgo = (date: Date): string => {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
   const filteredNotifications = notifications.filter((notif) => {
@@ -102,7 +207,7 @@ const NotificationsScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.notificationTitle}>{item.title}</Text>
         <Text style={styles.notificationMessage}>{item.message}</Text>
         <Text style={styles.notificationTime}>
-          {item.createdAt.toLocaleDateString()} {item.createdAt.toLocaleTimeString()}
+          {getTimeAgo(item.createdAt)}
         </Text>
       </View>
       {!item.read && <View style={styles.unreadDot} />}
