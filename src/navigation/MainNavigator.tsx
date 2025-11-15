@@ -17,12 +17,21 @@ import ProfileViewScreen from '../screens/profile/ProfileViewScreen';
 import FriendsListScreen from '../screens/profile/FriendsListScreen';
 import AddFriendsScreen from '../screens/profile/AddFriendsScreen';
 import SettingsScreen from '../screens/profile/SettingsScreen';
+import SocialHomeScreen from '../screens/social/SocialHomeScreen';
+import FriendsScreen from '../screens/social/FriendsScreen';
+import GroupsScreen from '../screens/social/GroupsScreen';
+import CommunitiesScreen from '../screens/social/CommunitiesScreen';
+import CreateGroupScreen from '../screens/social/CreateGroupScreen';
+import JoinGroupScreen from '../screens/social/JoinGroupScreen';
+import JoinCommunityScreen from '../screens/social/JoinCommunityScreen';
+import NotificationHeader from '../components/NotificationHeader';
 import {
   MainTabParamList,
   ClosetStackParamList,
   FeedStackParamList,
   RequestsStackParamList,
   ProfileStackParamList,
+  SocialStackParamList,
 } from '../types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -30,26 +39,61 @@ const ClosetStack = createStackNavigator<ClosetStackParamList>();
 const FeedStack = createStackNavigator<FeedStackParamList>();
 const RequestsStack = createStackNavigator<RequestsStackParamList>();
 const ProfileStack = createStackNavigator<ProfileStackParamList>();
+const SocialStack = createStackNavigator<SocialStackParamList>();
 
 const ClosetNavigator = () => (
-  <ClosetStack.Navigator>
-    <ClosetStack.Screen name="MyCloset" component={MyClosetScreen} options={{ title: 'My Closet' }} />
-    <ClosetStack.Screen name="AddItem" component={AddItemScreen} options={{ title: 'Add Item' }} />
-    <ClosetStack.Screen name="EditItem" component={EditItemScreen} options={{ title: 'Edit Item' }} />
+  <ClosetStack.Navigator screenOptions={{ headerShown: true }}>
+    <ClosetStack.Screen
+      name="MyCloset"
+      component={MyClosetScreen}
+      options={{
+        title: 'My Closet',
+        headerRight: () => <NotificationHeader />,
+      }}
+    />
+    <ClosetStack.Screen
+      name="AddItem"
+      component={AddItemScreen}
+      options={{ title: 'Add Item', headerRight: () => <NotificationHeader /> }}
+    />
+    <ClosetStack.Screen
+      name="EditItem"
+      component={EditItemScreen}
+      options={{ title: 'Edit Item', headerRight: () => <NotificationHeader /> }}
+    />
     <ClosetStack.Screen
       name="FriendCloset"
       component={FriendClosetScreen}
-      options={({ route }) => ({ title: `${route.params.friendName}'s Closet` })}
+      options={({ route }) => ({
+        title: `${route.params.friendName}'s Closet`,
+        headerRight: () => <NotificationHeader />,
+      })}
     />
-    <ClosetStack.Screen name="ItemDetail" component={ItemDetailScreen} options={{ title: 'Item Details' }} />
+    <ClosetStack.Screen
+      name="ItemDetail"
+      component={ItemDetailScreen}
+      options={{ title: 'Item Details', headerRight: () => <NotificationHeader /> }}
+    />
   </ClosetStack.Navigator>
 );
 
 const FeedNavigator = () => (
-  <FeedStack.Navigator>
-    <FeedStack.Screen name="FeedList" component={FeedListScreen} options={{ title: 'Feed' }} />
-    <FeedStack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: 'Create Post' }} />
-    <FeedStack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: 'Post' }} />
+  <FeedStack.Navigator screenOptions={{ headerShown: true }}>
+    <FeedStack.Screen
+      name="FeedList"
+      component={FeedListScreen}
+      options={{ title: 'Feed', headerRight: () => <NotificationHeader /> }}
+    />
+    <FeedStack.Screen
+      name="CreatePost"
+      component={CreatePostScreen}
+      options={{ title: 'Create Post', headerRight: () => <NotificationHeader /> }}
+    />
+    <FeedStack.Screen
+      name="PostDetail"
+      component={PostDetailScreen}
+      options={{ title: 'Post', headerRight: () => <NotificationHeader /> }}
+    />
   </FeedStack.Navigator>
 );
 
@@ -69,14 +113,76 @@ const RequestsNavigator = () => (
   </RequestsStack.Navigator>
 );
 
+const SocialNavigator = () => (
+  <SocialStack.Navigator screenOptions={{ headerShown: true }}>
+    <SocialStack.Screen
+      name="SocialHome"
+      component={SocialHomeScreen}
+      options={{ title: 'Social', headerRight: () => <NotificationHeader /> }}
+    />
+    <SocialStack.Screen
+      name="Friends"
+      component={FriendsScreen}
+      options={{ title: 'Friends', headerRight: () => <NotificationHeader /> }}
+    />
+    <SocialStack.Screen
+      name="Groups"
+      component={GroupsScreen}
+      options={{ title: 'Groups', headerRight: () => <NotificationHeader /> }}
+    />
+    <SocialStack.Screen
+      name="Communities"
+      component={CommunitiesScreen}
+      options={{ title: 'Communities', headerRight: () => <NotificationHeader /> }}
+    />
+    <SocialStack.Screen
+      name="AddFriends"
+      component={AddFriendsScreen}
+      options={{ title: 'Add Friends', headerRight: () => <NotificationHeader /> }}
+    />
+    <SocialStack.Screen
+      name="CreateGroup"
+      component={CreateGroupScreen}
+      options={{ title: 'Create Group', headerRight: () => <NotificationHeader /> }}
+    />
+    <SocialStack.Screen
+      name="JoinGroup"
+      component={JoinGroupScreen}
+      options={{ title: 'Join Group', headerRight: () => <NotificationHeader /> }}
+    />
+    <SocialStack.Screen
+      name="JoinCommunity"
+      component={JoinCommunityScreen}
+      options={{ title: 'Join Community', headerRight: () => <NotificationHeader /> }}
+    />
+  </SocialStack.Navigator>
+);
+
 const ProfileNavigator = () => (
-  <ProfileStack.Navigator>
-    <ProfileStack.Screen name="ProfileView" component={ProfileViewScreen} options={{ title: 'Profile' }} />
-    <ProfileStack.Screen name="FriendsList" component={FriendsListScreen} options={{ title: 'Friends' }} />
-    <ProfileStack.Screen name="AddFriends" component={AddFriendsScreen} options={{ title: 'Add Friends' }} />
-    <ProfileStack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+  <ProfileStack.Navigator screenOptions={{ headerShown: true }}>
+    <ProfileStack.Screen
+      name="ProfileView"
+      component={ProfileViewScreen}
+      options={{ title: 'Profile', headerRight: () => <NotificationHeader /> }}
+    />
+    <ProfileStack.Screen
+      name="FriendsList"
+      component={FriendsListScreen}
+      options={{ title: 'Friends', headerRight: () => <NotificationHeader /> }}
+    />
+    <ProfileStack.Screen
+      name="AddFriends"
+      component={AddFriendsScreen}
+      options={{ title: 'Add Friends', headerRight: () => <NotificationHeader /> }}
+    />
+    <ProfileStack.Screen
+      name="Settings"
+      component={SettingsScreen}
+      options={{ title: 'Settings', headerRight: () => <NotificationHeader /> }}
+    />
   </ProfileStack.Navigator>
 );
+
 
 const MainNavigator: React.FC = () => {
   return (
@@ -89,8 +195,8 @@ const MainNavigator: React.FC = () => {
             iconName = focused ? 'shirt' : 'shirt-outline';
           } else if (route.name === 'Feed') {
             iconName = focused ? 'grid' : 'grid-outline';
-          } else if (route.name === 'Requests') {
-            iconName = focused ? 'swap-horizontal' : 'swap-horizontal-outline';
+          } else if (route.name === 'Social') {
+            iconName = focused ? 'people' : 'people-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           } else {
@@ -106,7 +212,7 @@ const MainNavigator: React.FC = () => {
     >
       <Tab.Screen name="Closet" component={ClosetNavigator} />
       <Tab.Screen name="Feed" component={FeedNavigator} />
-      <Tab.Screen name="Requests" component={RequestsNavigator} />
+      <Tab.Screen name="Social" component={SocialNavigator} />
       <Tab.Screen name="Profile" component={ProfileNavigator} />
     </Tab.Navigator>
   );

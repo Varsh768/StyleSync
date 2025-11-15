@@ -53,6 +53,7 @@ export interface Post {
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
+  Notifications: undefined;
   PhoneEntry: undefined;
   OTPVerification: { phoneNumber: string; verificationId: string };
   Onboarding: undefined;
@@ -61,8 +62,24 @@ export type RootStackParamList = {
 export type MainTabParamList = {
   Closet: undefined;
   Feed: undefined;
-  Requests: undefined;
+  Social: undefined;
   Profile: undefined;
+};
+
+export type SocialStackParamList = {
+  SocialHome: undefined;
+  Friends: undefined;
+  Groups: undefined;
+  Communities: undefined;
+  AddFriends: undefined;
+  CreateGroup: undefined;
+  JoinGroup: undefined;
+  JoinCommunity: undefined;
+};
+
+export type NotificationsStackParamList = {
+  NotificationsList: undefined;
+  NotificationDetail: { notificationId: string };
 };
 
 export type ClosetStackParamList = {

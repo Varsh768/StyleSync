@@ -5,9 +5,21 @@ import { useAuth } from '../context/AuthContext';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
 import LoadingScreen from '../components/LoadingScreen';
-import { RootStackParamList } from '../types';
+import NotificationsScreen from '../screens/notifications/NotificationsScreen';
+import { RootStackParamList, NotificationsStackParamList } from '../types';
 
 const Stack = createStackNavigator<RootStackParamList>();
+const NotificationsStack = createStackNavigator<NotificationsStackParamList>();
+
+const NotificationsNavigator = () => (
+  <NotificationsStack.Navigator>
+    <NotificationsStack.Screen
+      name="NotificationsList"
+      component={NotificationsScreen}
+      options={{ title: 'Notifications' }}
+    />
+  </NotificationsStack.Navigator>
+);
 
 const AppNavigator: React.FC = () => {
   const { user, loading } = useAuth();
@@ -20,7 +32,14 @@ const AppNavigator: React.FC = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <Stack.Screen name="Main" component={MainNavigator} />
+          <>
+            <Stack.Screen name="Main" component={MainNavigator} />
+            <Stack.Screen
+              name="Notifications"
+              component={NotificationsNavigator}
+              options={{ presentation: 'modal' }}
+            />
+          </>
         ) : (
           <Stack.Screen name="Auth" component={AuthNavigator} />
         )}
