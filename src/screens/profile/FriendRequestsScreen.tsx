@@ -9,47 +9,60 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
-import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
-import { db } from '../../services/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { User, Friendship } from '../../types';
+import { Ionicons } from '@expo/vector-icons';
+
+// HARDCODED: Friend request users
+const MOCK_FRIEND_REQUEST_USERS: User[] = [
+  {
+    id: 'user-maria-1',
+    name: 'Maria Gonzalez',
+    phoneNumber: '+1234567894',
+    school: 'UW-Madison',
+    profileImageUrl: 'https://i.pravatar.cc/300?img=47',
+    createdAt: new Date('2024-03-01'),
+    contactsImported: true,
+  },
+  {
+    id: 'user-khloe-1',
+    name: 'Khloe Kacy',
+    phoneNumber: '+1234567895',
+    school: 'UW-Madison',
+    profileImageUrl: 'https://i.pravatar.cc/300?img=26',
+    createdAt: new Date('2024-03-05'),
+    contactsImported: true,
+  },
+];
+
+// HARDCODED: Initial friend requests
+const INITIAL_FRIEND_REQUESTS: Array<Friendship & { otherUser: User }> = [
+  {
+    id: 'request-maria-1',
+    userAId: 'user-maria-1',
+    userBId: 'current-user',
+    status: 'pending',
+    createdAt: new Date('2024-03-10'),
+    otherUser: MOCK_FRIEND_REQUEST_USERS[0],
+  },
+  {
+    id: 'request-khloe-1',
+    userAId: 'user-khloe-1',
+    userBId: 'current-user',
+    status: 'pending',
+    createdAt: new Date('2024-03-11'),
+    otherUser: MOCK_FRIEND_REQUEST_USERS[1],
+  },
+];
 
 const FriendRequestsScreen: React.FC = () => {
   const { user } = useAuth();
-  const [requests, setRequests] = useState<Array<Friendship & { otherUser: User }>>([]);
-  const [loading, setLoading] = useState(true);
+  const [requests, setRequests] = useState<Array<Friendship & { otherUser: User }>>(INITIAL_FRIEND_REQUESTS);
+  const [loading, setLoading] = useState(false);
 
   const loadRequests = async () => {
-    if (!user) return;
-
-    try {
-      const requestsQuery = query(
-        collection(db, 'friendships'),
-        where('userBId', '==', user.id),
-        where('status', '==', 'pending')
-      );
-      const requestsSnapshot = await getDocs(requestsQuery);
-      const requestsData = await Promise.all(
-        requestsSnapshot.docs.map(async (doc) => {
-          const friendship = { id: doc.id, ...doc.data() } as Friendship;
-          const userDoc = await getDoc(doc(db, 'users', friendship.userAId));
-          const otherUser = userDoc.exists()
-            ? ({
-                id: userDoc.id,
-                ...userDoc.data(),
-                createdAt: userDoc.data().createdAt?.toDate() || new Date(),
-              } as User)
-            : null;
-          return { ...friendship, otherUser };
-        })
-      );
-
-      setRequests(requestsData.filter((r) => r.otherUser !== null) as any);
-    } catch (error) {
-      console.error('Error loading friend requests:', error);
-    } finally {
-      setLoading(false);
-    }
+    // FIREBASE COMMENTED OUT - Using hardcoded data
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -57,30 +70,24 @@ const FriendRequestsScreen: React.FC = () => {
   }, [user]);
 
   const handleAccept = async (requestId: string) => {
-    try {
-      await updateDoc(doc(db, 'friendships', requestId), { status: 'accepted' });
-      Alert.alert('Success', 'Friend request accepted!');
-      loadRequests();
-    } catch (error) {
-      console.error('Error accepting request:', error);
-      Alert.alert('Error', 'Failed to accept request');
+    // FIREBASE COMMENTED OUT - Update local state
+    const acceptedRequest = requests.find(r => r.id === requestId);
+    if (acceptedRequest) {
+      Alert.alert('Success', `${acceptedRequest.otherUser.name} is now your friend!`);
+      setRequests(requests.filter(r => r.id !== requestId));
     }
   };
 
   const handleDecline = async (requestId: string) => {
-    Alert.alert('Decline Request', 'Are you sure?', [
+    const declinedRequest = requests.find(r => r.id === requestId);
+    Alert.alert('Decline Request', `Decline friend request from ${declinedRequest?.otherUser.name}?`, [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Decline',
         style: 'destructive',
         onPress: async () => {
-          try {
-            await updateDoc(doc(db, 'friendships', requestId), { status: 'declined' });
-            loadRequests();
-          } catch (error) {
-            console.error('Error declining request:', error);
-            Alert.alert('Error', 'Failed to decline request');
-          }
+          // FIREBASE COMMENTED OUT - Update local state
+          setRequests(requests.filter(r => r.id !== requestId));
         },
       },
     ]);

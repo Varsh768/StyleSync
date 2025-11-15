@@ -24,6 +24,9 @@ import CommunitiesScreen from '../screens/social/CommunitiesScreen';
 import CreateGroupScreen from '../screens/social/CreateGroupScreen';
 import JoinGroupScreen from '../screens/social/JoinGroupScreen';
 import JoinCommunityScreen from '../screens/social/JoinCommunityScreen';
+import UserProfileScreen from '../screens/social/UserProfileScreen';
+import GroupDetailScreen from '../screens/social/GroupDetailScreen';
+import FriendRequestsScreen from '../screens/profile/FriendRequestsScreen';
 import NotificationHeader from '../components/NotificationHeader';
 import {
   MainTabParamList,
@@ -141,6 +144,11 @@ const SocialNavigator = () => (
       options={{ title: 'Add Friends', headerRight: () => <NotificationHeader /> }}
     />
     <SocialStack.Screen
+      name="FriendRequests"
+      component={FriendRequestsScreen}
+      options={{ title: 'Friend Requests', headerRight: () => <NotificationHeader /> }}
+    />
+    <SocialStack.Screen
       name="CreateGroup"
       component={CreateGroupScreen}
       options={{ title: 'Create Group', headerRight: () => <NotificationHeader /> }}
@@ -154,6 +162,22 @@ const SocialNavigator = () => (
       name="JoinCommunity"
       component={JoinCommunityScreen}
       options={{ title: 'Join Community', headerRight: () => <NotificationHeader /> }}
+    />
+    <SocialStack.Screen
+      name="UserProfile"
+      component={UserProfileScreen}
+      options={({ route }) => ({
+        title: 'Profile',
+        headerRight: () => <NotificationHeader />,
+      })}
+    />
+    <SocialStack.Screen
+      name="GroupDetail"
+      component={GroupDetailScreen}
+      options={({ route }) => ({
+        title: route.params.groupName,
+        headerRight: () => <NotificationHeader />,
+      })}
     />
   </SocialStack.Navigator>
 );
