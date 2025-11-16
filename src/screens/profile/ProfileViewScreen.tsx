@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 import { ProfileStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 // FIREBASE COMMENTED OUT FOR TESTING
@@ -29,58 +30,59 @@ const ProfileViewScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.profileSection}>
+      <View style={styles.header}>
         {user?.profileImageUrl ? (
           <Image source={{ uri: user.profileImageUrl }} style={styles.profileImage} />
         ) : (
           <View style={styles.placeholderImage}>
-            <Text style={styles.placeholderText}>No Photo</Text>
+            <Ionicons name="person" size={60} color="#ccc" />
           </View>
         )}
         <Text style={styles.name}>{user?.name || 'Unknown'}</Text>
         <Text style={styles.school}>{user?.school || 'No school set'}</Text>
       </View>
 
-      <View style={styles.menuSection}>
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => navigation.navigate('FriendsList')}
-        >
-          <Text style={styles.menuText}>Friends</Text>
-          <Text style={styles.menuArrow}>›</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => navigation.navigate('AddFriends')}
-        >
-          <Text style={styles.menuText}>Add Friends</Text>
-          <Text style={styles.menuArrow}>›</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => {
-            // Navigate to friend requests - you can add this screen to navigation if needed
-            Alert.alert('Friend Requests', 'Check your incoming friend requests in Add Friends');
-          }}
-        >
-          <Text style={styles.menuText}>Friend Requests</Text>
-          <Text style={styles.menuArrow}>›</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => navigation.navigate('Settings')}
-        >
-          <Text style={styles.menuText}>Settings</Text>
-          <Text style={styles.menuArrow}>›</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
+      <View style={styles.statsContainer}>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>24</Text>
+          <Text style={styles.statLabel}>Items</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>3</Text>
+          <Text style={styles.statLabel}>Friends</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>8</Text>
+          <Text style={styles.statLabel}>Posts</Text>
+        </View>
       </View>
+
+      <TouchableOpacity
+        style={styles.editProfileButton}
+        onPress={() => navigation.navigate('Settings')}
+      >
+        <Text style={styles.editProfileText}>Edit Profile</Text>
+      </TouchableOpacity>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>About</Text>
+        <View style={styles.infoRow}>
+          <Ionicons name="school-outline" size={18} color="#666" />
+          <Text style={styles.infoText}>{user?.school || 'No school set'}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Ionicons name="calendar-outline" size={18} color="#666" />
+          <Text style={styles.infoText}>
+            Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Recently'}
+          </Text>
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <Text style={styles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -90,59 +92,101 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  profileSection: {
+  header: {
     alignItems: 'center',
     padding: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    backgroundColor: '#fff',
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     marginBottom: 15,
   },
   placeholderImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     backgroundColor: '#f0f0f0',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 15,
   },
-  placeholderText: {
-    color: '#999',
-  },
   name: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    color: '#000',
     marginBottom: 5,
   },
   school: {
     fontSize: 16,
     color: '#666',
   },
-  menuSection: {
-    paddingTop: 10,
-  },
-  menuItem: {
+  statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
+    justifyContent: 'space-around',
+    paddingVertical: 20,
+    borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderColor: '#eee',
+    backgroundColor: '#fff',
   },
-  menuText: {
+  statItem: {
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#000',
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  statDivider: {
+    width: 1,
+    backgroundColor: '#eee',
+  },
+  editProfileButton: {
+    margin: 15,
+    marginTop: 20,
+    padding: 12,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    alignItems: 'center',
+  },
+  editProfileText: {
+    color: '#666',
     fontSize: 16,
+    fontWeight: '600',
   },
-  menuArrow: {
-    fontSize: 20,
-    color: '#999',
+  section: {
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#000',
+    marginBottom: 15,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  infoText: {
+    fontSize: 15,
+    color: '#333',
+    marginLeft: 12,
   },
   signOutButton: {
-    margin: 15,
+    margin: 20,
+    marginTop: 30,
     padding: 15,
     backgroundColor: '#ff3b30',
     borderRadius: 8,

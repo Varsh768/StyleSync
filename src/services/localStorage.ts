@@ -165,3 +165,122 @@ export const markNotificationsAsViewed = async (): Promise<void> => {
   }
 };
 
+// Messages storage
+const MESSAGES_KEY = '@styleswap:messages';
+
+export interface StoredMessage {
+  id: string;
+  conversationId: string; // Format: "userId1-userId2" (alphabetically sorted)
+  text: string;
+  senderId: string;
+  timestamp: string;
+}
+
+export interface Conversation {
+  id: string; // Same as conversationId
+  participantId: string; // The other person's ID
+  participantName: string;
+  lastMessage?: StoredMessage;
+  unreadCount: number;
+}
+
+const getConversationId = (userId1: string, userId2: string): string => {
+  return [userId1, userId2].sort().join('-');
+};
+
+export const saveMessage = async (
+  senderId: string,
+  recipientId: string,
+  text: string
+): Promise<StoredMessage> => {
+  try {
+    const messages = await getMessages();
+    const conversationId = getConversationId(senderId, recipientId);
+    const newMessage: StoredMessage = {
+      id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      conversationId,
+      text,
+      senderId,
+      timestamp: new Date().toISOString(),
+    };
+    messages.push(newMessage);
+    await AsyncStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
+    return newMessage;
+  } catch (error) {
+    console.error('Error saving message:', error);
+    throw error;
+  }
+};
+
+export const getMessages = async (): Promise<StoredMessage[]> => {
+  try {
+    const data = await AsyncStorage.getItem(MESSAGES_KEY);
+    if (!data) return [];
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error getting messages:', error);
+    return [];
+  }
+};
+
+export const getConversationMessages = async (
+  userId1: string,
+  userId2: string
+): Promise<StoredMessage[]> => {
+  try {
+    const allMessages = await getMessages();
+    const conversationId = getConversationId(userId1, userId2);
+    return allMessages
+      .filter((msg) => msg.conversationId === conversationId)
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  } catch (error) {
+    console.error('Error getting conversation messages:', error);
+    return [];
+  }
+};
+
+export const getConversations = async (currentUserId: string): Promise<Conversation[]> => {
+  try {
+    const allMessages = await getMessages();
+    const conversationMap = new Map<string, Conversation>();
+
+    // Group messages by conversation
+    allMessages.forEach((msg) => {
+      const otherUserId = msg.conversationId
+        .split('-')
+        .find((id) => id !== currentUserId);
+
+      if (!otherUserId) return;
+
+      if (!conversationMap.has(msg.conversationId)) {
+        conversationMap.set(msg.conversationId, {
+          id: msg.conversationId,
+          participantId: otherUserId,
+          participantName: '', // Will be filled later
+          lastMessage: msg,
+          unreadCount: 0,
+        });
+      } else {
+        const conv = conversationMap.get(msg.conversationId)!;
+        // Update last message if this one is newer
+        if (
+          new Date(msg.timestamp).getTime() >
+          new Date(conv.lastMessage!.timestamp).getTime()
+        ) {
+          conv.lastMessage = msg;
+        }
+      }
+    });
+
+    // Convert map to array and sort by last message time
+    return Array.from(conversationMap.values()).sort((a, b) => {
+      const timeA = a.lastMessage ? new Date(a.lastMessage.timestamp).getTime() : 0;
+      const timeB = b.lastMessage ? new Date(b.lastMessage.timestamp).getTime() : 0;
+      return timeB - timeA;
+    });
+  } catch (error) {
+    console.error('Error getting conversations:', error);
+    return [];
+  }
+};
+

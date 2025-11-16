@@ -27,15 +27,14 @@ interface Group {
   createdAt: Date;
 }
 
-// HARDCODED: Besties group with Tanya, Veronica, and Zeina
+// HARDCODED: Besties group with Veronica and Zeina
 const MOCK_GROUPS: Group[] = [
   {
     id: 'group-besties-1',
     name: 'Besties',
     description: 'Your closest friends',
-    memberCount: 3,
+    memberCount: 2,
     members: [
-      { id: 'user-tanya-1', name: 'Tanya', profileImageUrl: 'https://i.pinimg.com/1200x/06/fa/21/06fa212e8ba50142912f2184a4f33b7d.jpg' },
       { id: 'user-veronica-1', name: 'Veronica', profileImageUrl: 'https://i.pinimg.com/736x/7d/0b/de/7d0bdece3a8a35145987643040aa133e.jpg' },
       { id: 'user-zeina-1', name: 'Zeina', profileImageUrl: 'https://i.pinimg.com/736x/bb/2d/d0/bb2dd04187c87185ab38f837e0670a0b.jpg' },
     ],

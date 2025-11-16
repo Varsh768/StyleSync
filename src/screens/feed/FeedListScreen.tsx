@@ -7,9 +7,12 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
+  Linking,
+  Alert,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { FeedStackParamList } from '../../types';
 // FIREBASE COMMENTED OUT FOR TESTING
 // import { collection, query, where, getDocs, orderBy, or } from 'firebase/firestore';
@@ -26,6 +29,16 @@ interface Props {
 
 interface PostWithAuthor extends Post {
   authorName?: string;
+  isSponsored?: boolean;
+  brandName?: string;
+  productName?: string;
+  productSize?: string;
+  sponsorLink?: string;
+  sustainabilityStats?: {
+    waterSaved?: string;
+    co2Reduced?: string;
+    recycledMaterials?: string;
+  };
 }
 
 const FeedListScreen: React.FC<Props> = ({ navigation }) => {
@@ -64,6 +77,27 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
         },
         {
+          id: 'sponsored-post-1',
+          authorId: 'reformation-brand',
+          authorName: 'Reformation',
+          isSponsored: true,
+          brandName: 'Reformation',
+          productName: 'Reformation Dress',
+          productSize: 'Medium',
+          sponsorLink: 'https://www.reformation.com', // User will fill this in
+          imageUrls: [
+            'https://i.pinimg.com/736x/c5/f0/85/c5f08545e4b4c8e62c4f5b8b0e5e4f3e.jpg',
+          ],
+          caption: 'Sustainable style meets elegance 🌿',
+          visibility: 'friends',
+          createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
+          sustainabilityStats: {
+            waterSaved: '3,000 gallons',
+            co2Reduced: '12 lbs',
+            recycledMaterials: '60% recycled fabric',
+          },
+        },
+        {
           id: 'post-3',
           authorId: 'tanya-id',
           authorName: 'Hanna Rossi',
@@ -95,6 +129,27 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           caption: 'Casual but cute 🥰',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+        },
+        {
+          id: 'sponsored-post-2',
+          authorId: 'girlfriend-collective-brand',
+          authorName: 'Girlfriend Collective',
+          isSponsored: true,
+          brandName: 'Girlfriend Collective',
+          productName: 'High-Rise Leggings',
+          productSize: 'Small',
+          sponsorLink: 'https://www.girlfriend.com', // User will fill this in
+          imageUrls: [
+            'https://i.pinimg.com/736x/ea/3a/b9/ea3ab9c8e0e8c8f4f5c5e5f5e5f5e5f5.jpg',
+          ],
+          caption: 'Made from recycled water bottles 💧♻️',
+          visibility: 'friends',
+          createdAt: new Date(Date.now() - 3.5 * 24 * 60 * 60 * 1000), // 3.5 days ago
+          sustainabilityStats: {
+            waterSaved: '1,200 gallons',
+            co2Reduced: '8 lbs',
+            recycledMaterials: '79% recycled plastic bottles',
+          },
         },
         {
           id: 'post-6',
@@ -167,35 +222,121 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
     }, [user])
   );
 
-  const renderPost = ({ item }: { item: PostWithAuthor }) => (
-    <TouchableOpacity
-      style={styles.postCard}
-      onPress={() => navigation.navigate('FeedPostItems', { postId: item.id, authorName: item.authorName })}
-    >
-      <View style={styles.postHeader}>
-        <View style={styles.authorInfo}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {item.authorName ? item.authorName.charAt(0).toUpperCase() : '?'}
-            </Text>
+  const handleSponsoredPostPress = async (link?: string) => {
+    if (!link) {
+      Alert.alert('No Link', 'This sponsored post does not have a link set up yet.');
+      return;
+    }
+
+    try {
+      const canOpen = await Linking.canOpenURL(link);
+      if (canOpen) {
+        await Linking.openURL(link);
+      } else {
+        Alert.alert('Cannot Open Link', 'Unable to open this link.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to open link.');
+    }
+  };
+
+  const renderPost = ({ item }: { item: PostWithAuthor }) => {
+    if (item.isSponsored) {
+      return (
+        <TouchableOpacity
+          style={[styles.postCard, styles.sponsoredCard]}
+          onPress={() => handleSponsoredPostPress(item.sponsorLink)}
+        >
+          <View style={styles.sponsoredBadge}>
+            <Text style={styles.sponsoredBadgeText}>Sponsored</Text>
           </View>
-          <Text style={styles.authorName}>{item.authorName || 'Unknown'}</Text>
+          <View style={styles.postHeader}>
+            <View style={styles.authorInfo}>
+              <View style={[styles.avatar, styles.brandAvatar]}>
+                <Ionicons name="leaf" size={20} color="#fff" />
+              </View>
+              <View>
+                <Text style={styles.authorName}>{item.brandName || 'Brand'}</Text>
+                <Text style={styles.productInfo}>
+                  {item.productName}
+                </Text>
+              </View>
+            </View>
+          </View>
+          {item.imageUrls && item.imageUrls.length > 0 && (
+            <Image source={{ uri: item.imageUrls[0] }} style={styles.postImage} />
+          )}
+          {item.caption && (
+            <View style={styles.captionContainer}>
+              <Text style={styles.caption}>{item.caption}</Text>
+            </View>
+          )}
+          {item.sustainabilityStats && (
+            <View style={styles.sustainabilityContainer}>
+              <View style={styles.sustainabilityHeader}>
+                <Ionicons name="leaf-outline" size={16} color="#34C759" />
+                <Text style={styles.sustainabilityTitle}>Sustainability Impact</Text>
+              </View>
+              <View style={styles.statsGrid}>
+                {item.sustainabilityStats.waterSaved && (
+                  <View style={styles.statItem}>
+                    <Ionicons name="water-outline" size={14} color="#007AFF" />
+                    <Text style={styles.statText}>{item.sustainabilityStats.waterSaved}</Text>
+                  </View>
+                )}
+                {item.sustainabilityStats.co2Reduced && (
+                  <View style={styles.statItem}>
+                    <Ionicons name="cloud-outline" size={14} color="#FF9500" />
+                    <Text style={styles.statText}>{item.sustainabilityStats.co2Reduced} CO₂</Text>
+                  </View>
+                )}
+                {item.sustainabilityStats.recycledMaterials && (
+                  <View style={styles.statItem}>
+                    <Ionicons name="repeat-outline" size={14} color="#34C759" />
+                    <Text style={styles.statText}>{item.sustainabilityStats.recycledMaterials}</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+          <View style={styles.shopNowContainer}>
+            <Ionicons name="arrow-forward-circle-outline" size={18} color="#007AFF" />
+            <Text style={styles.shopNowText}>Tap to shop now</Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <TouchableOpacity
+        style={styles.postCard}
+        onPress={() => navigation.navigate('FeedPostItems', { postId: item.id, authorName: item.authorName })}
+      >
+        <View style={styles.postHeader}>
+          <View style={styles.authorInfo}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>
+                {item.authorName ? item.authorName.charAt(0).toUpperCase() : '?'}
+              </Text>
+            </View>
+            <Text style={styles.authorName}>{item.authorName || 'Unknown'}</Text>
+          </View>
+          <Text style={styles.timestamp}>
+            {getTimeAgo(item.createdAt)}
+          </Text>
         </View>
-        <Text style={styles.timestamp}>
-          {getTimeAgo(item.createdAt)}
-        </Text>
-      </View>
-      {item.imageUrls && item.imageUrls.length > 0 && (
-        <Image source={{ uri: item.imageUrls[0] }} style={styles.postImage} />
-      )}
-      {item.caption && (
-        <View style={styles.captionContainer}>
-          <Text style={styles.authorNameCaption}>{item.authorName || 'Unknown'}</Text>
-          <Text style={styles.caption}>{item.caption}</Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
+        {item.imageUrls && item.imageUrls.length > 0 && (
+          <Image source={{ uri: item.imageUrls[0] }} style={styles.postImage} />
+        )}
+        {item.caption && (
+          <View style={styles.captionContainer}>
+            <Text style={styles.authorNameCaption}>{item.authorName || 'Unknown'}</Text>
+            <Text style={styles.caption}>{item.caption}</Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    );
+  };
 
   const getTimeAgo = (date: Date): string => {
     const now = new Date();
@@ -313,6 +454,82 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+  },
+  // Sponsored post styles
+  sponsoredCard: {
+    borderColor: '#34C759',
+    borderWidth: 2,
+    backgroundColor: '#f9fff9',
+  },
+  sponsoredBadge: {
+    backgroundColor: '#34C759',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
+    margin: 8,
+    borderRadius: 4,
+  },
+  sponsoredBadgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  brandAvatar: {
+    backgroundColor: '#34C759',
+  },
+  productInfo: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+  sustainabilityContainer: {
+    backgroundColor: '#f0fff4',
+    padding: 12,
+    marginHorizontal: 12,
+    marginTop: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#d4f4dd',
+  },
+  sustainabilityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  sustainabilityTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#34C759',
+    marginLeft: 6,
+  },
+  statsGrid: {
+    gap: 8,
+  },
+  statItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  statText: {
+    fontSize: 13,
+    color: '#333',
+    marginLeft: 8,
+  },
+  shopNowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  shopNowText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#007AFF',
+    marginLeft: 6,
   },
 });
 

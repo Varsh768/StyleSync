@@ -14,6 +14,8 @@ import { RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SocialStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
+import { getConversationMessages, saveMessage, StoredMessage } from '../../services/localStorage';
+import { useFocusEffect } from '@react-navigation/native';
 
 type MessagesScreenNavigationProp = StackNavigationProp<SocialStackParamList, 'Messages'>;
 type MessagesScreenRouteProp = RouteProp<SocialStackParamList, 'Messages'>;
@@ -44,23 +46,59 @@ const MessagesScreen: React.FC<Props> = ({ navigation, route }) => {
     });
   }, [userName, navigation]);
 
-  const handleSend = () => {
+  // Load messages from storage
+  const loadMessages = async () => {
+    if (!user) return;
+    try {
+      const storedMessages = await getConversationMessages(user.id, userId);
+      const formattedMessages: Message[] = storedMessages.map((msg) => ({
+        id: msg.id,
+        text: msg.text,
+        senderId: msg.senderId,
+        timestamp: new Date(msg.timestamp),
+      }));
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadMessages();
+  }, [user, userId]);
+
+  // Reload messages when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      loadMessages();
+    }, [user, userId])
+  );
+
+  const handleSend = async () => {
     if (!inputText.trim() || !user) return;
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text: inputText.trim(),
-      senderId: user.id,
-      timestamp: new Date(),
-    };
+    try {
+      // Save message to storage
+      const savedMessage = await saveMessage(user.id, userId, inputText.trim());
 
-    setMessages([...messages, newMessage]);
-    setInputText('');
+      // Add to local state
+      const newMessage: Message = {
+        id: savedMessage.id,
+        text: savedMessage.text,
+        senderId: savedMessage.senderId,
+        timestamp: new Date(savedMessage.timestamp),
+      };
 
-    // Auto scroll to bottom after sending
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }, 100);
+      setMessages([...messages, newMessage]);
+      setInputText('');
+
+      // Auto scroll to bottom after sending
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   const renderMessage = ({ item }: { item: Message }) => {

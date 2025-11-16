@@ -8,6 +8,7 @@ import AddItemScreen from '../screens/closet/AddItemScreen';
 import EditItemScreen from '../screens/closet/EditItemScreen';
 import FriendClosetScreen from '../screens/closet/FriendClosetScreen';
 import ItemDetailScreen from '../screens/closet/ItemDetailScreen';
+import FeedTabsScreen from '../screens/feed/FeedTabsScreen';
 import FeedListScreen from '../screens/feed/FeedListScreen';
 import CreatePostScreen from '../screens/feed/CreatePostScreen';
 import PostDetailScreen from '../screens/feed/PostDetailScreen';
@@ -29,8 +30,10 @@ import JoinCommunityScreen from '../screens/social/JoinCommunityScreen';
 import UserProfileScreen from '../screens/social/UserProfileScreen';
 import GroupDetailScreen from '../screens/social/GroupDetailScreen';
 import MessagesScreen from '../screens/social/MessagesScreen';
+import MessagesListScreen from '../screens/social/MessagesListScreen';
 import FriendRequestsScreen from '../screens/profile/FriendRequestsScreen';
 import NotificationHeader from '../components/NotificationHeader';
+import HeaderIcons from '../components/HeaderIcons';
 import {
   MainTabParamList,
   ClosetStackParamList,
@@ -54,23 +57,23 @@ const ClosetNavigator = () => (
       component={MyClosetScreen}
       options={{
         title: 'My Closet',
-        headerRight: () => <NotificationHeader />,
+        headerRight: () => <HeaderIcons />,
       }}
     />
     <ClosetStack.Screen
       name="AddItem"
       component={AddItemScreen}
-      options={{ title: 'Add Item', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Add Item', headerRight: () => <HeaderIcons /> }}
     />
     <ClosetStack.Screen
       name="EditItem"
       component={EditItemScreen}
-      options={{ title: 'Edit Item', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Edit Item', headerRight: () => <HeaderIcons /> }}
     />
     <ClosetStack.Screen
       name="ItemDetail"
       component={ItemDetailScreen}
-      options={{ title: 'Item Details', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Item Details', headerRight: () => <HeaderIcons /> }}
     />
   </ClosetStack.Navigator>
 );
@@ -78,8 +81,8 @@ const ClosetNavigator = () => (
 const FeedNavigator = () => (
   <FeedStack.Navigator screenOptions={{ headerShown: true }}>
     <FeedStack.Screen
-      name="FeedList"
-      component={FeedListScreen}
+      name="FeedTabs"
+      component={FeedTabsScreen}
       options={({ navigation }) => ({
         title: 'Feed',
         headerLeft: () => (
@@ -90,23 +93,23 @@ const FeedNavigator = () => (
             <Text style={styles.postButtonText}>+ Post</Text>
           </TouchableOpacity>
         ),
-        headerRight: () => <NotificationHeader />,
+        headerRight: () => <HeaderIcons />,
       })}
     />
     <FeedStack.Screen
       name="CreatePost"
       component={CreatePostScreen}
-      options={{ title: 'Create Post', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Create Post', headerRight: () => <HeaderIcons /> }}
     />
     <FeedStack.Screen
       name="PostDetail"
       component={PostDetailScreen}
-      options={{ title: 'Post', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Post', headerRight: () => <HeaderIcons /> }}
     />
     <FeedStack.Screen
       name="FeedPostItems"
       component={FeedPostItemsScreen}
-      options={{ title: 'Items in Post', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Items in Post', headerRight: () => <HeaderIcons /> }}
     />
   </FeedStack.Navigator>
 );
@@ -132,54 +135,54 @@ const SocialNavigator = () => (
     <SocialStack.Screen
       name="SocialHome"
       component={SocialHomeScreen}
-      options={{ title: 'Social', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Social', headerRight: () => <HeaderIcons /> }}
     />
     <SocialStack.Screen
       name="Friends"
       component={FriendsScreen}
-      options={{ title: 'Friends', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Friends', headerRight: () => <HeaderIcons /> }}
     />
     <SocialStack.Screen
       name="Groups"
       component={GroupsScreen}
-      options={{ title: 'Groups', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Groups', headerRight: () => <HeaderIcons /> }}
     />
     <SocialStack.Screen
       name="Communities"
       component={CommunitiesScreen}
-      options={{ title: 'Communities', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Communities', headerRight: () => <HeaderIcons /> }}
     />
     <SocialStack.Screen
       name="AddFriends"
       component={AddFriendsScreen}
-      options={{ title: 'Add Friends', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Add Friends', headerRight: () => <HeaderIcons /> }}
     />
     <SocialStack.Screen
       name="FriendRequests"
       component={FriendRequestsScreen}
-      options={{ title: 'Friend Requests', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Friend Requests', headerRight: () => <HeaderIcons /> }}
     />
     <SocialStack.Screen
       name="CreateGroup"
       component={CreateGroupScreen}
-      options={{ title: 'Create Group', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Create Group', headerRight: () => <HeaderIcons /> }}
     />
     <SocialStack.Screen
       name="JoinGroup"
       component={JoinGroupScreen}
-      options={{ title: 'Join Group', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Join Group', headerRight: () => <HeaderIcons /> }}
     />
     <SocialStack.Screen
       name="JoinCommunity"
       component={JoinCommunityScreen}
-      options={{ title: 'Join Community', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Join Community', headerRight: () => <HeaderIcons /> }}
     />
     <SocialStack.Screen
       name="UserProfile"
       component={UserProfileScreen}
       options={({ route }) => ({
         title: 'Profile',
-        headerRight: () => <NotificationHeader />,
+        headerRight: () => <HeaderIcons />,
       })}
     />
     <SocialStack.Screen
@@ -187,7 +190,7 @@ const SocialNavigator = () => (
       component={GroupDetailScreen}
       options={({ route }) => ({
         title: route.params.groupName,
-        headerRight: () => <NotificationHeader />,
+        headerRight: () => <HeaderIcons />,
       })}
     />
     <SocialStack.Screen
@@ -195,14 +198,22 @@ const SocialNavigator = () => (
       component={FriendClosetScreen}
       options={({ route }) => ({
         title: `${route.params.friendName}'s Closet`,
-        headerRight: () => <NotificationHeader />,
+        headerRight: () => <HeaderIcons />,
       })}
     />
     <SocialStack.Screen
       name="Messages"
       component={MessagesScreen}
       options={{
-        headerRight: () => <NotificationHeader />,
+        headerRight: () => <HeaderIcons />,
+      }}
+    />
+    <SocialStack.Screen
+      name="MessagesList"
+      component={MessagesListScreen}
+      options={{
+        title: 'Messages',
+        headerRight: () => <HeaderIcons />,
       }}
     />
   </SocialStack.Navigator>
@@ -213,22 +224,22 @@ const ProfileNavigator = () => (
     <ProfileStack.Screen
       name="ProfileView"
       component={ProfileViewScreen}
-      options={{ title: 'Profile', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Profile', headerRight: () => <HeaderIcons /> }}
     />
     <ProfileStack.Screen
       name="FriendsList"
       component={FriendsListScreen}
-      options={{ title: 'Friends', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Friends', headerRight: () => <HeaderIcons /> }}
     />
     <ProfileStack.Screen
       name="AddFriends"
       component={AddFriendsScreen}
-      options={{ title: 'Add Friends', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Add Friends', headerRight: () => <HeaderIcons /> }}
     />
     <ProfileStack.Screen
       name="Settings"
       component={SettingsScreen}
-      options={{ title: 'Settings', headerRight: () => <NotificationHeader /> }}
+      options={{ title: 'Settings', headerRight: () => <HeaderIcons /> }}
     />
   </ProfileStack.Navigator>
 );
