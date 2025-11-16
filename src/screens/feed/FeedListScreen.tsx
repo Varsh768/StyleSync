@@ -380,14 +380,30 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
         activeOpacity={0.9}
       >
         <View style={styles.postHeader}>
-          <View style={styles.authorInfo}>
+          <TouchableOpacity
+            style={styles.authorInfo}
+            onPress={(e) => {
+              e.stopPropagation();
+              // Navigate to profile only for Samantha (sarah-id)
+              if (item.authorId === 'sarah-id') {
+                (navigation as any).navigate('Social', {
+                  screen: 'UserProfile',
+                  params: { userId: item.authorId },
+                });
+              }
+            }}
+            activeOpacity={0.7}
+          >
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>
                 {item.authorName ? item.authorName.charAt(0).toUpperCase() : '?'}
               </Text>
             </View>
-            <Text style={styles.authorName}>{item.authorName || 'Unknown'}</Text>
-          </View>
+            <View>
+              <Text style={styles.authorName}>{item.authorName || 'Unknown'}</Text>
+              <Text style={styles.communityLabel}>UW-Madison community</Text>
+            </View>
+          </TouchableOpacity>
           <Text style={styles.timestamp}>{getTimeAgo(item.createdAt)}</Text>
         </View>
         {item.imageUrls && item.imageUrls.length > 0 && (
@@ -490,6 +506,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#000',
+  },
+  communityLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
   },
   timestamp: {
     fontSize: 12,

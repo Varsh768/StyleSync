@@ -13,8 +13,24 @@ interface Props {
   route: UserProfileScreenRouteProp;
 }
 
-// HARDCODED: User profiles for Tanya, Veronica, and Zeina
+// HARDCODED: User profiles for Tanya, Veronica, Zeina, and Samantha
 const MOCK_USER_PROFILES: { [key: string]: User & { bio?: string; closetItemCount?: number; recentItems?: string[] } } = {
+  'sarah-id': {
+    id: 'sarah-id',
+    name: 'Samantha Antonopoulos',
+    phoneNumber: '+1234567890',
+    school: 'UW-Madison',
+    profileImageUrl: 'https://i.pinimg.com/1200x/f7/ca/f9/f7caf9cd8d58cb84f873b84af3bd178d.jpg',
+    createdAt: new Date('2024-02-01'),
+    contactsImported: true,
+    bio: 'Fashion lover 💕 Sharing my daily outfits and style inspo!',
+    closetItemCount: 28,
+    recentItems: [
+      'https://i.pinimg.com/736x/7e/04/74/7e0474921319d865bbea6f1c9fd4e3d3.jpg',
+      'https://i.pinimg.com/736x/d8/a4/fb/d8a4fb60e7f7514d60e560015d06f520.jpg',
+      'https://i.pinimg.com/1200x/d2/c7/b8/d2c7b871788cb23bfa7677a1c27a379e.jpg',
+    ],
+  },
   'user-tanya-1': {
     id: 'user-tanya-1',
     name: 'Tanya Suresh',

@@ -202,19 +202,37 @@ const SocialNavigator = () => (
       })}
     />
     <SocialStack.Screen
-      name="Messages"
-      component={MessagesScreen}
-      options={{
-        headerRight: () => <HeaderIcons />,
-      }}
-    />
-    <SocialStack.Screen
       name="MessagesList"
       component={MessagesListScreen}
-      options={{
+      options={({ navigation }) => ({
         title: 'Messages',
+        headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 15 }}
+          >
+            <Ionicons name="arrow-back" size={24} color="#007AFF" />
+          </TouchableOpacity>
+        ),
         headerRight: () => <HeaderIcons />,
-      }}
+        headerBackTitleVisible: false,
+      })}
+    />
+    <SocialStack.Screen
+      name="Messages"
+      component={MessagesScreen}
+      options={({ navigation }) => ({
+        headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 15 }}
+          >
+            <Ionicons name="arrow-back" size={24} color="#007AFF" />
+          </TouchableOpacity>
+        ),
+        headerRight: () => <HeaderIcons />,
+        headerBackTitleVisible: false,
+      })}
     />
   </SocialStack.Navigator>
 );

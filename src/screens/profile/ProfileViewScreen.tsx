@@ -44,17 +44,17 @@ const ProfileViewScreen: React.FC<Props> = ({ navigation }) => {
 
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>24</Text>
+          <Text style={styles.statNumber}>0</Text>
           <Text style={styles.statLabel}>Items</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>3</Text>
+          <Text style={styles.statNumber}>0</Text>
           <Text style={styles.statLabel}>Friends</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>8</Text>
+          <Text style={styles.statNumber}>0</Text>
           <Text style={styles.statLabel}>Posts</Text>
         </View>
       </View>
