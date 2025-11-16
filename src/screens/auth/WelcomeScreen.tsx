@@ -26,6 +26,9 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
+        {/* Welcome Text */}
+        <Text style={styles.welcomeTitle}>Welcome to</Text>
+
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
@@ -34,9 +37,6 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
             resizeMode="cover"
           />
         </View>
-
-        {/* Welcome Text */}
-        <Text style={styles.welcomeTitle}>Welcome To StyleSwap</Text>
 
         {/* Start Button */}
         <TouchableOpacity style={styles.startButton} onPress={handleStart}>
@@ -58,12 +58,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
   },
+  welcomeTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
   logoContainer: {
     width: 320,
     height: 320,
     borderRadius: 160,
     overflow: 'hidden',
-    marginBottom: 40,
+    marginBottom: 50,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
@@ -79,13 +86,6 @@ const styles = StyleSheet.create({
   logoImage: {
     width: '100%',
     height: '100%',
-  },
-  welcomeTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#000',
-    textAlign: 'center',
-    marginBottom: 50,
   },
   startButton: {
     backgroundColor: '#007AFF',
