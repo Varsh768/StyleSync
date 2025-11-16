@@ -82,20 +82,20 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           authorName: 'Reformation',
           isSponsored: true,
           brandName: 'Reformation',
-          productName: 'Reformation Dress',
+          productName: 'Romi Silk Dress',
           productSize: 'Medium',
-          sponsorLink: 'https://www.reformation.com', // User will fill this in
+          sponsorLink: 'https://www.thereformation.com/products/romi-silk-dress/1319142SNG.html?dwvar_1319142SNG_color=SNG&_gl=1*1esb4yc*_up*MQ..*_gs*MQ..&gclid=Cj0KCQiA5uDIBhDAARIsAOxj0CEDozMWMmW4cx5z7bkoaBF3x7HM2qFeK6Zx_qgYDoCRHR62KEF10IQaAtirEALw_wcB&gbraid=0AAAAADmLagVEjfGg-IJ8_NSmBHcoI8zRQ', // User will fill this in
           imageUrls: [
-            'https://i.pinimg.com/736x/c5/f0/85/c5f08545e4b4c8e62c4f5b8b0e5e4f3e.jpg',
+            'https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1319142/SANGRE/1319142.1.SANGRE',
           ],
           caption: 'Sustainable style meets elegance 🌿',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
           sustainabilityStats: {
-            waterSaved: '3,000 gallons',
-            co2Reduced: '12 lbs',
-            recycledMaterials: '60% recycled fabric',
-          },
+      waterSaved: 'Mostly recycled materials',
+      co2Reduced: 'Climate-positive by 2025',
+      recycledMaterials: 'Recycles 75% of waste',
+    },
         },
         {
           id: 'post-3',
@@ -138,18 +138,18 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           brandName: 'Girlfriend Collective',
           productName: 'High-Rise Leggings',
           productSize: 'Small',
-          sponsorLink: 'https://www.girlfriend.com', // User will fill this in
+          sponsorLink: 'https://girlfriend.com/collections/compressive-high-rise-legging/products/snowcap-compressive-high-rise-legging', // User will fill this in
           imageUrls: [
-            'https://i.pinimg.com/736x/ea/3a/b9/ea3ab9c8e0e8c8f4f5c5e5f5e5f5e5f5.jpg',
+            'https://girlfriend.com/cdn/shop/files/4007_4008_Legging_XS_SnowCap_1_web_2048x2048.jpg?v=1738799016',
           ],
           caption: 'Made from recycled water bottles 💧♻️',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 3.5 * 24 * 60 * 60 * 1000), // 3.5 days ago
           sustainabilityStats: {
-            waterSaved: '1,200 gallons',
-            co2Reduced: '8 lbs',
-            recycledMaterials: '79% recycled plastic bottles',
-          },
+      waterSaved: 'Made from recycled bottles',
+      co2Reduced: '100% recycled packaging',
+      recycledMaterials: 'Take-back program (“ReGirlfriend”) recycles old clothes',
+    },
         },
         {
           id: 'post-6',
@@ -287,7 +287,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
                 {item.sustainabilityStats.co2Reduced && (
                   <View style={styles.statItem}>
                     <Ionicons name="cloud-outline" size={14} color="#FF9500" />
-                    <Text style={styles.statText}>{item.sustainabilityStats.co2Reduced} CO₂</Text>
+                    <Text style={styles.statText}>{item.sustainabilityStats.co2Reduced} </Text>
                   </View>
                 )}
                 {item.sustainabilityStats.recycledMaterials && (
