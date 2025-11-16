@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types';
@@ -19,12 +20,19 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('PhoneEntry');
   };
 
+  // Logo from assets folder
+  const logoSource = require('../../../assets/logo.png');
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        {/* Logo Placeholder */}
-        <View style={styles.logoPlaceholder}>
-          <Text style={styles.logoText}>Logo</Text>
+        {/* Logo */}
+        <View style={styles.logoContainer}>
+          <Image
+            source={logoSource}
+            style={styles.logoImage}
+            resizeMode="cover"
+          />
         </View>
 
         {/* Welcome Text */}
@@ -50,22 +58,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
   },
-  logoPlaceholder: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: '#f0f0f0',
+  logoContainer: {
+    width: 320,
+    height: 320,
+    borderRadius: 160,
+    overflow: 'hidden',
+    marginBottom: 40,
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 40,
-    borderWidth: 2,
-    borderColor: '#ddd',
-    borderStyle: 'dashed',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  logoText: {
-    fontSize: 18,
-    color: '#999',
-    fontWeight: '500',
+  logoImage: {
+    width: '100%',
+    height: '100%',
   },
   welcomeTitle: {
     fontSize: 32,
