@@ -39,6 +39,8 @@ interface PostWithAuthor extends Post {
     co2Reduced?: string;
     recycledMaterials?: string;
   };
+  likeCount?: number;
+  liked?: boolean;
 }
 
 const FeedListScreen: React.FC<Props> = ({ navigation }) => {
@@ -47,12 +49,11 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
 
   const loadPosts = async () => {
-    // FIREBASE COMMENTED OUT - HARDCODED DATA FOR TESTING
     try {
       // Load user-created posts from local storage
       const userPosts = await getPosts();
       
-      // Hardcoded posts from friends Samantha, Gwen, and Hanna
+      // Hardcoded posts from friends + sponsored
       const hardcodedPosts: PostWithAuthor[] = [
         {
           id: 'post-1',
@@ -64,6 +65,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           caption: 'This is a cute dinner outfit 🍽️✨',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+          likeCount: 3,
+          liked: false,
         },
         {
           id: 'post-2',
@@ -75,6 +78,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           caption: 'This is a fall outfit 🍂🍁',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+          likeCount: 5,
+          liked: false,
         },
         {
           id: 'sponsored-post-1',
@@ -84,7 +89,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           brandName: 'Reformation',
           productName: 'Romi Silk Dress',
           productSize: 'Medium',
-          sponsorLink: 'https://www.thereformation.com/products/romi-silk-dress/1319142SNG.html?dwvar_1319142SNG_color=SNG&_gl=1*1esb4yc*_up*MQ..*_gs*MQ..&gclid=Cj0KCQiA5uDIBhDAARIsAOxj0CEDozMWMmW4cx5z7bkoaBF3x7HM2qFeK6Zx_qgYDoCRHR62KEF10IQaAtirEALw_wcB&gbraid=0AAAAADmLagVEjfGg-IJ8_NSmBHcoI8zRQ', // User will fill this in
+          sponsorLink:
+            'https://www.thereformation.com/products/romi-silk-dress/1319142SNG.html?dwvar_1319142SNG_color=SNG&_gl=1*1esb4yc*_up*MQ..*_gs*MQ..&gclid=Cj0KCQiA5uDIBhDAARIsAOxj0CEDozMWMmW4cx5z7bkoaBF3x7HM2qFeK6Zx_qgYDoCRHR62KEF10IQaAtirEALw_wcB&gbraid=0AAAAADmLagVEjfGg-IJ8_NSmBHcoI8zRQ',
           imageUrls: [
             'https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1319142/SANGRE/1319142.1.SANGRE',
           ],
@@ -92,10 +98,12 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           visibility: 'friends',
           createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
           sustainabilityStats: {
-      waterSaved: 'Mostly recycled materials',
-      co2Reduced: 'Climate-positive by 2025',
-      recycledMaterials: 'Recycles 75% of waste',
-    },
+            waterSaved: 'Mostly recycled materials',
+            co2Reduced: 'Climate-positive by 2025',
+            recycledMaterials: 'Recycles 75% of waste',
+          },
+          likeCount: 10,
+          liked: false,
         },
         {
           id: 'post-3',
@@ -107,6 +115,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           caption: 'This is a workout outfit 💪🏋️',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+          likeCount: 2,
+          liked: false,
         },
         {
           id: 'post-4',
@@ -118,6 +128,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           caption: 'This is a comfy outfit 😌💕',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+          likeCount: 4,
+          liked: false,
         },
         {
           id: 'post-5',
@@ -129,6 +141,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           caption: 'Casual but cute 🥰',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+          likeCount: 6,
+          liked: false,
         },
         {
           id: 'sponsored-post-2',
@@ -138,7 +152,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           brandName: 'Girlfriend Collective',
           productName: 'High-Rise Leggings',
           productSize: 'Small',
-          sponsorLink: 'https://girlfriend.com/collections/compressive-high-rise-legging/products/snowcap-compressive-high-rise-legging', // User will fill this in
+          sponsorLink:
+            'https://girlfriend.com/collections/compressive-high-rise-legging/products/snowcap-compressive-high-rise-legging',
           imageUrls: [
             'https://girlfriend.com/cdn/shop/files/4007_4008_Legging_XS_SnowCap_1_web_2048x2048.jpg?v=1738799016',
           ],
@@ -146,10 +161,12 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           visibility: 'friends',
           createdAt: new Date(Date.now() - 3.5 * 24 * 60 * 60 * 1000), // 3.5 days ago
           sustainabilityStats: {
-      waterSaved: 'Made from recycled bottles',
-      co2Reduced: '100% recycled packaging',
-      recycledMaterials: 'Take-back program (“ReGirlfriend”) recycles old clothes',
-    },
+            waterSaved: 'Made from recycled bottles',
+            co2Reduced: '100% recycled packaging',
+            recycledMaterials: 'ReGirlfriend take-back program',
+          },
+          likeCount: 8,
+          liked: false,
         },
         {
           id: 'post-6',
@@ -161,6 +178,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           caption: 'Running outfit 🏃‍♀️',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 days ago
+          likeCount: 1,
+          liked: false,
         },
         {
           id: 'post-7',
@@ -172,6 +191,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           caption: 'Trench coat for colder days 🧥❄️',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+          likeCount: 7,
+          liked: false,
         },
         {
           id: 'post-8',
@@ -183,6 +204,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
           caption: 'Love this look! ✨',
           visibility: 'friends',
           createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 days ago
+          likeCount: 9,
+          liked: false,
         },
       ];
 
@@ -196,6 +219,8 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
         taggedItemIds: storedPost.taggedItemIds,
         visibility: storedPost.visibility,
         createdAt: new Date(storedPost.createdAt),
+        likeCount: 0,
+        liked: false,
       }));
 
       // Combine user posts with hardcoded posts
@@ -219,7 +244,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       loadPosts();
-    }, [user])
+    }, [user]),
   );
 
   const handleSponsoredPostPress = async (link?: string) => {
@@ -240,77 +265,119 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const toggleLike = (postId: string) => {
+    setPosts((prev) =>
+      prev.map((post) => {
+        if (post.id !== postId) return post;
+        const currentlyLiked = post.liked ?? false;
+        const currentCount = post.likeCount ?? 0;
+        return {
+          ...post,
+          liked: !currentlyLiked,
+          likeCount: currentCount + (currentlyLiked ? -1 : 1),
+        };
+      }),
+    );
+  };
+
   const renderPost = ({ item }: { item: PostWithAuthor }) => {
+    const likeIconName = item.liked ? 'heart' : 'heart-outline';
+    const likeIconColor = item.liked ? '#FF2D55' : '#333';
+
     if (item.isSponsored) {
       return (
-        <TouchableOpacity
-          style={[styles.postCard, styles.sponsoredCard]}
-          onPress={() => handleSponsoredPostPress(item.sponsorLink)}
-        >
-          <View style={styles.sponsoredBadge}>
-            <Text style={styles.sponsoredBadgeText}>Sponsored</Text>
-          </View>
-          <View style={styles.postHeader}>
-            <View style={styles.authorInfo}>
-              <View style={[styles.avatar, styles.brandAvatar]}>
-                <Ionicons name="leaf" size={20} color="#fff" />
-              </View>
-              <View>
-                <Text style={styles.authorName}>{item.brandName || 'Brand'}</Text>
-                <Text style={styles.productInfo}>
-                  {item.productName}
-                </Text>
+        <View style={[styles.postCard, styles.sponsoredCard]}>
+          <TouchableOpacity
+            style={styles.sponsoredTapArea}
+            onPress={() => handleSponsoredPostPress(item.sponsorLink)}
+            activeOpacity={0.9}
+          >
+            <View style={styles.sponsoredBadge}>
+              <Text style={styles.sponsoredBadgeText}>Sponsored</Text>
+            </View>
+            <View style={styles.postHeader}>
+              <View style={styles.authorInfo}>
+                <View style={[styles.avatar, styles.brandAvatar]}>
+                  <Ionicons name="leaf" size={20} color="#fff" />
+                </View>
+                <View>
+                  <Text style={styles.authorName}>{item.brandName || 'Brand'}</Text>
+                  <Text style={styles.productInfo}>{item.productName}</Text>
+                </View>
               </View>
             </View>
-          </View>
-          {item.imageUrls && item.imageUrls.length > 0 && (
-            <Image source={{ uri: item.imageUrls[0] }} style={styles.postImage} />
-          )}
-          {item.caption && (
-            <View style={styles.captionContainer}>
-              <Text style={styles.caption}>{item.caption}</Text>
-            </View>
-          )}
-          {item.sustainabilityStats && (
-            <View style={styles.sustainabilityContainer}>
-              <View style={styles.sustainabilityHeader}>
-                <Ionicons name="leaf-outline" size={16} color="#34C759" />
-                <Text style={styles.sustainabilityTitle}>Sustainability Impact</Text>
+            {item.imageUrls && item.imageUrls.length > 0 && (
+              <Image source={{ uri: item.imageUrls[0] }} style={styles.postImage} />
+            )}
+            {item.caption && (
+              <View style={styles.captionContainer}>
+                <Text style={styles.caption}>{item.caption}</Text>
               </View>
-              <View style={styles.statsGrid}>
-                {item.sustainabilityStats.waterSaved && (
-                  <View style={styles.statItem}>
-                    <Ionicons name="water-outline" size={14} color="#007AFF" />
-                    <Text style={styles.statText}>{item.sustainabilityStats.waterSaved}</Text>
-                  </View>
-                )}
-                {item.sustainabilityStats.co2Reduced && (
-                  <View style={styles.statItem}>
-                    <Ionicons name="cloud-outline" size={14} color="#FF9500" />
-                    <Text style={styles.statText}>{item.sustainabilityStats.co2Reduced} </Text>
-                  </View>
-                )}
-                {item.sustainabilityStats.recycledMaterials && (
-                  <View style={styles.statItem}>
-                    <Ionicons name="repeat-outline" size={14} color="#34C759" />
-                    <Text style={styles.statText}>{item.sustainabilityStats.recycledMaterials}</Text>
-                  </View>
-                )}
+            )}
+            {item.sustainabilityStats && (
+              <View style={styles.sustainabilityContainer}>
+                <View style={styles.sustainabilityHeader}>
+                  <Ionicons name="leaf-outline" size={16} color="#34C759" />
+                  <Text style={styles.sustainabilityTitle}>Sustainability Impact</Text>
+                </View>
+                <View style={styles.statsGrid}>
+                  {item.sustainabilityStats.waterSaved && (
+                    <View style={styles.statItem}>
+                      <Ionicons name="water-outline" size={14} color="#007AFF" />
+                      <Text style={styles.statText}>{item.sustainabilityStats.waterSaved}</Text>
+                    </View>
+                  )}
+                  {item.sustainabilityStats.co2Reduced && (
+                    <View style={styles.statItem}>
+                      <Ionicons name="cloud-outline" size={14} color="#FF9500" />
+                      <Text style={styles.statText}>{item.sustainabilityStats.co2Reduced}</Text>
+                    </View>
+                  )}
+                  {item.sustainabilityStats.recycledMaterials && (
+                    <View style={styles.statItem}>
+                      <Ionicons name="repeat-outline" size={14} color="#34C759" />
+                      <Text style={styles.statText}>
+                        {item.sustainabilityStats.recycledMaterials}
+                      </Text>
+                    </View>
+                  )}
+                </View>
               </View>
+            )}
+          </TouchableOpacity>
+
+          {/* Like + CTA row */}
+          <View style={styles.footerRow}>
+            <TouchableOpacity
+              style={styles.likeButton}
+              onPress={() => toggleLike(item.id)}
+              activeOpacity={0.7}
+            >
+              <Ionicons name={likeIconName} size={20} color={likeIconColor} />
+              <Text style={styles.likeCountText}>
+                {item.likeCount ?? 0} {item.likeCount === 1 ? 'like' : 'likes'}
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.shopNowContainer}>
+              <Ionicons name="arrow-forward-circle-outline" size={18} color="#007AFF" />
+              <Text style={styles.shopNowText}>Tap to shop now</Text>
             </View>
-          )}
-          <View style={styles.shopNowContainer}>
-            <Ionicons name="arrow-forward-circle-outline" size={18} color="#007AFF" />
-            <Text style={styles.shopNowText}>Tap to shop now</Text>
           </View>
-        </TouchableOpacity>
+        </View>
       );
     }
 
+    // Regular (friend) post
     return (
       <TouchableOpacity
         style={styles.postCard}
-        onPress={() => navigation.navigate('FeedPostItems', { postId: item.id, authorName: item.authorName })}
+        onPress={() =>
+          navigation.navigate('FeedPostItems', {
+            postId: item.id,
+            authorName: item.authorName,
+          })
+        }
+        activeOpacity={0.9}
       >
         <View style={styles.postHeader}>
           <View style={styles.authorInfo}>
@@ -321,9 +388,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
             </View>
             <Text style={styles.authorName}>{item.authorName || 'Unknown'}</Text>
           </View>
-          <Text style={styles.timestamp}>
-            {getTimeAgo(item.createdAt)}
-          </Text>
+          <Text style={styles.timestamp}>{getTimeAgo(item.createdAt)}</Text>
         </View>
         {item.imageUrls && item.imageUrls.length > 0 && (
           <Image source={{ uri: item.imageUrls[0] }} style={styles.postImage} />
@@ -334,6 +399,18 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.caption}>{item.caption}</Text>
           </View>
         )}
+        <View style={styles.likeRow}>
+          <TouchableOpacity
+            style={styles.likeButton}
+            onPress={() => toggleLike(item.id)}
+            activeOpacity={0.7}
+          >
+            <Ionicons name={likeIconName} size={20} color={likeIconColor} />
+            <Text style={styles.likeCountText}>
+              {item.likeCount ?? 0} {item.likeCount === 1 ? 'like' : 'likes'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -341,7 +418,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
   const getTimeAgo = (date: Date): string => {
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
+
     if (diffInSeconds < 60) return 'just now';
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
@@ -461,6 +538,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     backgroundColor: '#f9fff9',
   },
+  sponsoredTapArea: {
+    flex: 1,
+  },
   sponsoredBadge: {
     backgroundColor: '#34C759',
     paddingHorizontal: 10,
@@ -516,14 +596,38 @@ const styles = StyleSheet.create({
     color: '#333',
     marginLeft: 8,
   },
+  // Likes
+  likeRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 12,
+    paddingBottom: 10,
+  },
+  likeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  likeCountText: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500',
+    marginLeft: 6,
+  },
+  // Sponsored footer
+  footerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    backgroundColor: '#fff',
+  },
   shopNowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 12,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
   },
   shopNowText: {
     fontSize: 14,
@@ -534,4 +638,3 @@ const styles = StyleSheet.create({
 });
 
 export default FeedListScreen;
-
