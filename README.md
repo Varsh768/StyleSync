@@ -1,4 +1,4 @@
-# StyleSync - Shared Closet App
+# StyleSwap - Shared Closet App
 
 A React Native mobile app that lets college students maintain a digital closet, connect with friends, and borrow/lend clothing items.
 
@@ -32,7 +32,7 @@ A React Native mobile app that lets college students maintain a digital closet, 
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd StyleSync
+cd StyleSwap
 ```
 
 2. Install dependencies:

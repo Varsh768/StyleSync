@@ -69,7 +69,7 @@ const PhoneEntryScreen: React.FC<Props> = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>Welcome to StyleSync</Text>
+        <Text style={styles.title}>Welcome to StyleSwap</Text>
         <Text style={styles.subtitle}>Enter your phone number to get started</Text>
 
         <TextInput

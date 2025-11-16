@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { NotificationsStackParamList } from '../../types';
@@ -32,6 +33,8 @@ interface Notification {
   userName?: string;
   postId?: string;
   requestId?: string;
+  itemId?: string;
+  status?: 'pending' | 'accepted' | 'declined' | 'cancelled' | 'completed';
   read: boolean;
   createdAt: Date;
 }
@@ -78,6 +81,8 @@ const NotificationsScreen: React.FC<Props> = ({ navigation }) => {
           userName: 'Suha',
           userId: 'suha-id',
           requestId: 'request-1',
+          itemId: 'item-1',
+          status: 'accepted',
           read: false,
           createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
         },
@@ -110,7 +115,9 @@ const NotificationsScreen: React.FC<Props> = ({ navigation }) => {
           userName: 'Veronica',
           userId: 'veronica-id',
           requestId: 'request-2',
-          read: true,
+          itemId: 'item-2',
+          status: 'pending',
+          read: false,
           createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
         },
         {
@@ -170,6 +177,69 @@ const NotificationsScreen: React.FC<Props> = ({ navigation }) => {
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
+  const handleAcceptRequest = async (notification: Notification) => {
+    // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
+    try {
+      // Update notification status
+      setNotifications((prev) =>
+        prev.map((notif) =>
+          notif.id === notification.id
+            ? { ...notif, status: 'accepted' as const, read: true }
+            : notif
+        )
+      );
+      Alert.alert('Success', `Request from ${notification.userName} has been accepted!`);
+      loadNotifications();
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      Alert.alert('Error', 'Failed to accept request');
+    }
+  };
+
+  const handleDeclineRequest = async (notification: Notification) => {
+    Alert.alert(
+      'Decline Request',
+      `Are you sure you want to decline ${notification.userName}'s request?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Decline',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // FIREBASE COMMENTED OUT - MOCK IMPLEMENTATION
+              // Update notification status
+              setNotifications((prev) =>
+                prev.map((notif) =>
+                  notif.id === notification.id
+                    ? { ...notif, status: 'declined' as const, read: true }
+                    : notif
+                )
+              );
+              Alert.alert('Success', 'Request declined');
+              loadNotifications();
+            } catch (error) {
+              console.error('Error declining request:', error);
+              Alert.alert('Error', 'Failed to decline request');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleMessageRequest = (notification: Notification) => {
+    // Navigate to request detail screen where user can see more details and message
+    if (notification.requestId) {
+      (navigation as any).navigate('Requests', {
+        screen: 'RequestDetail',
+        params: { requestId: notification.requestId },
+      });
+    } else {
+      Alert.alert('Message', `Messaging feature coming soon! You can contact ${notification.userName} about this request.`);
+    }
+  };
+
   const filteredNotifications = notifications.filter((notif) => {
     if (activeTab === 'all') return true;
     if (activeTab === 'friend_requests') return notif.type === 'friend_request';
@@ -178,41 +248,72 @@ const NotificationsScreen: React.FC<Props> = ({ navigation }) => {
     return true;
   });
 
-  const renderNotification = ({ item }: { item: Notification }) => (
-    <TouchableOpacity
-      style={[styles.notificationCard, !item.read && styles.unreadCard]}
-      onPress={() => {
-        // Navigate based on notification type
-        if (item.type === 'friend_request') {
-          // Navigate to friend requests
-        } else if (item.type === 'borrow_request') {
-          // Navigate to request detail
-          if (item.requestId) {
-            (navigation as any).navigate('Requests', {
-              screen: 'RequestDetail',
-              params: { requestId: item.requestId },
-            });
-          }
-        } else if (item.type === 'like' && item.postId) {
-          // Navigate to post detail
-          (navigation as any).navigate('Feed', {
-            screen: 'PostDetail',
-            params: { postId: item.postId },
-          });
-        }
-      }}
-    >
-      <Text style={styles.notificationIcon}>{getNotificationIcon(item.type)}</Text>
-      <View style={styles.notificationContent}>
-        <Text style={styles.notificationTitle}>{item.title}</Text>
-        <Text style={styles.notificationMessage}>{item.message}</Text>
-        <Text style={styles.notificationTime}>
-          {getTimeAgo(item.createdAt)}
-        </Text>
+  const renderNotification = ({ item }: { item: Notification }) => {
+    const isPendingBorrowRequest =
+      item.type === 'borrow_request' && item.status === 'pending';
+
+    return (
+      <View style={[styles.notificationCard, !item.read && styles.unreadCard]}>
+        <TouchableOpacity
+          style={styles.notificationContentWrapper}
+          onPress={() => {
+            // Navigate based on notification type
+            if (item.type === 'friend_request') {
+              // Navigate to friend requests
+            } else if (item.type === 'borrow_request') {
+              // Navigate to request detail
+              if (item.requestId) {
+                (navigation as any).navigate('Requests', {
+                  screen: 'RequestDetail',
+                  params: { requestId: item.requestId },
+                });
+              }
+            } else if (item.type === 'like' && item.postId) {
+              // Navigate to post detail
+              (navigation as any).navigate('Feed', {
+                screen: 'PostDetail',
+                params: { postId: item.postId },
+              });
+            }
+          }}
+        >
+          <Text style={styles.notificationIcon}>{getNotificationIcon(item.type)}</Text>
+          <View style={styles.notificationContent}>
+            <Text style={styles.notificationTitle}>{item.title}</Text>
+            <Text style={styles.notificationMessage}>{item.message}</Text>
+            <Text style={styles.notificationTime}>
+              {getTimeAgo(item.createdAt)}
+            </Text>
+          </View>
+          {!item.read && <View style={styles.unreadDot} />}
+        </TouchableOpacity>
+
+        {/* Action buttons for pending borrow requests */}
+        {isPendingBorrowRequest && (
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              style={styles.acceptButton}
+              onPress={() => handleAcceptRequest(item)}
+            >
+              <Text style={styles.acceptButtonText}>Yes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.declineButton}
+              onPress={() => handleDeclineRequest(item)}
+            >
+              <Text style={styles.declineButtonText}>No</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.messageButton}
+              onPress={() => handleMessageRequest(item)}
+            >
+              <Text style={styles.messageButtonText}>Message</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-      {!item.read && <View style={styles.unreadDot} />}
-    </TouchableOpacity>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -302,17 +403,19 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   notificationCard: {
-    flexDirection: 'row',
     backgroundColor: '#f9f9f9',
     borderRadius: 8,
     padding: 15,
     marginBottom: 10,
-    alignItems: 'flex-start',
   },
   unreadCard: {
     backgroundColor: '#f0f7ff',
     borderLeftWidth: 3,
     borderLeftColor: '#007AFF',
+  },
+  notificationContentWrapper: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   notificationIcon: {
     fontSize: 24,
@@ -351,6 +454,50 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: '#666',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    marginTop: 12,
+    gap: 8,
+  },
+  acceptButton: {
+    flex: 1,
+    backgroundColor: '#34C759',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  acceptButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  declineButton: {
+    flex: 1,
+    backgroundColor: '#FF3B30',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  declineButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  messageButton: {
+    flex: 1,
+    backgroundColor: '#007AFF',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  messageButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 

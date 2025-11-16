@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
@@ -8,12 +8,15 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
+  TextInput,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 import { ClosetStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { ClosetItem } from '../../types';
 import { getClosetItems, StoredClosetItem } from '../../services/localStorage';
+import CategoryDropdown from '../../components/CategoryDropdown';
 
 type MyClosetScreenNavigationProp = StackNavigationProp<ClosetStackParamList, 'MyCloset'>;
 
@@ -21,10 +24,24 @@ interface Props {
   navigation: MyClosetScreenNavigationProp;
 }
 
+const CATEGORIES = [
+  'Top',
+  'Bottom',
+  'Dress',
+  'Outerwear',
+  'Shoes',
+  'Accessories',
+  'Saree',
+  'Blazer',
+  'Other',
+];
+
 const MyClosetScreen: React.FC<Props> = ({ navigation }) => {
   const { user } = useAuth();
   const [items, setItems] = useState<ClosetItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const loadItems = async () => {
     if (!user) return;
@@ -68,6 +85,41 @@ const MyClosetScreen: React.FC<Props> = ({ navigation }) => {
     }, [user])
   );
 
+  // Filter items based on category and search query
+  const filteredItems = useMemo(() => {
+    let filtered = items;
+
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
+    }
+
+    // Filter by search query (searches in title, brand, notes, category, size)
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((item) => {
+        const searchableText = [
+          item.title,
+          item.brand,
+          item.notes,
+          item.category,
+          item.size,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        return searchableText.includes(query);
+      });
+    }
+
+    return filtered;
+  }, [items, selectedCategory, searchQuery]);
+
+  const clearFilters = () => {
+    setSelectedCategory('');
+    setSearchQuery('');
+  };
+
   const renderItem = ({ item }: { item: ClosetItem }) => (
     <TouchableOpacity
       style={styles.itemCard}
@@ -101,14 +153,60 @@ const MyClosetScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Filter and Search Section */}
+      <View style={styles.filterSection}>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by title, brand, notes..."
+            placeholderTextColor="#999"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
+              <Ionicons name="close-circle" size={20} color="#666" />
+            </TouchableOpacity>
+          )}
+        </View>
+        <View style={styles.filterRow}>
+          <View style={styles.categoryFilterContainer}>
+            <CategoryDropdown
+              selectedValue={selectedCategory}
+              onValueChange={setSelectedCategory}
+              categories={['', ...CATEGORIES]}
+              placeholder="All Categories"
+            />
+          </View>
+          {(selectedCategory || searchQuery) && (
+            <TouchableOpacity style={styles.clearFiltersButton} onPress={clearFilters}>
+              <Text style={styles.clearFiltersText}>Clear</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
       {items.length === 0 && !loading ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>Your closet is empty</Text>
           <Text style={styles.emptySubtext}>Add your first item to get started!</Text>
         </View>
+      ) : filteredItems.length === 0 && !loading ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No items found</Text>
+          <Text style={styles.emptySubtext}>
+            Try adjusting your search or filter criteria
+          </Text>
+          {(selectedCategory || searchQuery) && (
+            <TouchableOpacity style={styles.clearFiltersButtonLarge} onPress={clearFilters}>
+              <Text style={styles.clearFiltersButtonLargeText}>Clear Filters</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       ) : (
         <FlatList
-          data={items}
+          data={filteredItems}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           numColumns={2}
@@ -210,6 +308,68 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+  },
+  filterSection: {
+    padding: 15,
+    backgroundColor: '#f9f9f9',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    paddingHorizontal: 12,
+    marginBottom: 10,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 10,
+    color: '#000',
+  },
+  clearButton: {
+    padding: 4,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  categoryFilterContainer: {
+    flex: 1,
+  },
+  clearFiltersButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  clearFiltersText: {
+    color: '#007AFF',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  clearFiltersButtonLarge: {
+    marginTop: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    alignSelf: 'center',
+  },
+  clearFiltersButtonLargeText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
   },
 });
 

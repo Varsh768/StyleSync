@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MyClosetScreen from '../screens/closet/MyClosetScreen';
 import AddItemScreen from '../screens/closet/AddItemScreen';
@@ -85,7 +86,18 @@ const FeedNavigator = () => (
     <FeedStack.Screen
       name="FeedList"
       component={FeedListScreen}
-      options={{ title: 'Feed', headerRight: () => <NotificationHeader /> }}
+      options={({ navigation }) => ({
+        title: 'Feed',
+        headerLeft: () => (
+          <TouchableOpacity
+            style={styles.postButton}
+            onPress={() => navigation.navigate('CreatePost')}
+          >
+            <Text style={styles.postButtonText}>+ Post</Text>
+          </TouchableOpacity>
+        ),
+        headerRight: () => <NotificationHeader />,
+      })}
     />
     <FeedStack.Screen
       name="CreatePost"
@@ -241,6 +253,20 @@ const MainNavigator: React.FC = () => {
     </Tab.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  postButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginLeft: 15,
+  },
+  postButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+});
 
 export default MainNavigator;
 

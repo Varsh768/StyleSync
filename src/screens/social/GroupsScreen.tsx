@@ -68,7 +68,7 @@ const GroupsScreen: React.FC<Props> = ({ navigation }) => {
   }, [user]);
 
   const handleInviteToGroup = async (groupName: string) => {
-    const message = `Hey! 👋 I'm using StyleSync to share my closet with friends. Want to join my "${groupName}" group? We swap outfits, save money, and help the planet! 👗✨`;
+    const message = `Hey! 👋 I'm using StyleSwap to share my closet with friends. Want to join my "${groupName}" group? We swap outfits, save money, and help the planet! 👗✨`;
     const smsUrl = `sms:&body=${encodeURIComponent(message)}`;
 
     try {

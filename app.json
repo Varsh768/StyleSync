@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "StyleSync",
-    "slug": "stylesync",
+    "name": "StyleSwap",
+    "slug": "styleswap",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,14 +16,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.stylesync.app"
+      "bundleIdentifier": "com.styleswap.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.stylesync.app"
+      "package": "com.styleswap.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

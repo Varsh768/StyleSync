@@ -1,7 +1,7 @@
 // Local storage service for hardcoded data (no Firebase)
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CLOSET_ITEMS_KEY = '@stylesync:closet_items';
+const CLOSET_ITEMS_KEY = '@styleswap:closet_items';
 
 export interface StoredClosetItem {
   id: string;
@@ -82,7 +82,7 @@ export const deleteClosetItem = async (itemId: string): Promise<void> => {
 };
 
 // Posts storage
-const POSTS_KEY = '@stylesync:posts';
+const POSTS_KEY = '@styleswap:posts';
 
 export interface StoredPost {
   id: string;
@@ -124,7 +124,7 @@ export const getPosts = async (): Promise<StoredPost[]> => {
 };
 
 // Notifications storage
-const NOTIFICATIONS_KEY = '@stylesync:notifications';
+const NOTIFICATIONS_KEY = '@styleswap:notifications';
 
 export interface StoredNotification {
   id: string;
@@ -139,7 +139,7 @@ export interface StoredNotification {
   createdAt: string;
 }
 
-const NOTIFICATIONS_VIEWED_KEY = '@stylesync:notifications_viewed';
+const NOTIFICATIONS_VIEWED_KEY = '@styleswap:notifications_viewed';
 
 export const getUnreadNotificationCount = async (): Promise<number> => {
   try {

@@ -209,16 +209,6 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Feed</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate('CreatePost')}
-        >
-          <Text style={styles.addButtonText}>+ Post</Text>
-        </TouchableOpacity>
-      </View>
-
       {posts.length === 0 && !loading ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No posts yet</Text>
@@ -241,28 +231,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  addButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: '600',
   },
   list: {
     padding: 10,

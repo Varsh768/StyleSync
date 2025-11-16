@@ -67,7 +67,7 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
 
             <FlatList
               data={categories}
-              keyExtractor={(item) => item}
+              keyExtractor={(item) => item || 'all'}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={[
@@ -82,7 +82,7 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
                       selectedValue === item && styles.selectedCategoryText,
                     ]}
                   >
-                    {item}
+                    {item || placeholder}
                   </Text>
                   {selectedValue === item && (
                     <Ionicons name="checkmark" size={20} color="#007AFF" />

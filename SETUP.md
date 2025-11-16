@@ -1,4 +1,4 @@
-# StyleSync Setup Guide
+# StyleSwap Setup Guide
 
 ## Firebase Configuration
 
