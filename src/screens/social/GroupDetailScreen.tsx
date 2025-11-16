@@ -17,32 +17,35 @@ interface Props {
 const GROUP_MEMBERS: { [key: string]: User[] } = {
   'group-besties-1': [
     {
-      id: 'user-sarah-1',
-      name: 'Sarah',
+    id: 'user-tanya-1',
+    name: 'Tanya Suresh',
+    phoneNumber: '+1234567891',
+    school: 'UW-Madison',
+    profileImageUrl: 'https://i.pinimg.com/1200x/06/fa/21/06fa212e8ba50142912f2184a4f33b7d.jpg',
+    createdAt: new Date('2024-01-15'),
+    contactsImported: true,
+  },
+    {
+    id: 'user-veronica-1',
+    name: 'Veronica Jones',
+    phoneNumber: '+1234567892',
+    school: 'UW-Madison',
+    profileImageUrl: 'https://i.pinimg.com/736x/7d/0b/de/7d0bdece3a8a35145987643040aa133e.jpg',
+    createdAt: new Date('2024-02-10'),
+    contactsImported: true,
+  },
+    {
+      id: 'user-zeina-1',
+     
+      name: 'Zeina Mahmoud',
       phoneNumber: '+1234567893',
       school: 'UW-Madison',
-      profileImageUrl: 'https://i.pravatar.cc/300?img=9',
+      profileImageUrl: 'https://i.pinimg.com/736x/bb/2d/d0/bb2dd04187c87185ab38f837e0670a0b.jpg',
       createdAt: new Date('2024-01-20'),
       contactsImported: true,
     },
-    {
-      id: 'user-tanya-1',
-      name: 'Tanya',
-      phoneNumber: '+1234567891',
-      school: 'UW-Madison',
-      profileImageUrl: 'https://i.pravatar.cc/300?img=1',
-      createdAt: new Date('2024-01-15'),
-      contactsImported: true,
-    },
-    {
-      id: 'user-veronica-1',
-      name: 'Veronica',
-      phoneNumber: '+1234567892',
-      school: 'UW-Madison',
-      profileImageUrl: 'https://i.pravatar.cc/300?img=5',
-      createdAt: new Date('2024-02-10'),
-      contactsImported: true,
-    },
+
+    
   ],
 };
 

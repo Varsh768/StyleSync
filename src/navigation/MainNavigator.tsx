@@ -11,6 +11,7 @@ import ItemDetailScreen from '../screens/closet/ItemDetailScreen';
 import FeedListScreen from '../screens/feed/FeedListScreen';
 import CreatePostScreen from '../screens/feed/CreatePostScreen';
 import PostDetailScreen from '../screens/feed/PostDetailScreen';
+import FeedPostItemsScreen from '../screens/feed/FeedPostItemsScreen';
 import RequestsListScreen from '../screens/requests/RequestsListScreen';
 import RequestDetailScreen from '../screens/requests/RequestDetailScreen';
 import CreateRequestScreen from '../screens/requests/CreateRequestScreen';
@@ -27,6 +28,7 @@ import JoinGroupScreen from '../screens/social/JoinGroupScreen';
 import JoinCommunityScreen from '../screens/social/JoinCommunityScreen';
 import UserProfileScreen from '../screens/social/UserProfileScreen';
 import GroupDetailScreen from '../screens/social/GroupDetailScreen';
+import MessagesScreen from '../screens/social/MessagesScreen';
 import FriendRequestsScreen from '../screens/profile/FriendRequestsScreen';
 import NotificationHeader from '../components/NotificationHeader';
 import {
@@ -100,6 +102,11 @@ const FeedNavigator = () => (
       name="PostDetail"
       component={PostDetailScreen}
       options={{ title: 'Post', headerRight: () => <NotificationHeader /> }}
+    />
+    <FeedStack.Screen
+      name="FeedPostItems"
+      component={FeedPostItemsScreen}
+      options={{ title: 'Items in Post', headerRight: () => <NotificationHeader /> }}
     />
   </FeedStack.Navigator>
 );
@@ -190,6 +197,13 @@ const SocialNavigator = () => (
         title: `${route.params.friendName}'s Closet`,
         headerRight: () => <NotificationHeader />,
       })}
+    />
+    <SocialStack.Screen
+      name="Messages"
+      component={MessagesScreen}
+      options={{
+        headerRight: () => <NotificationHeader />,
+      }}
     />
   </SocialStack.Navigator>
 );

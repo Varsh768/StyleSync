@@ -39,12 +39,12 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
       // Load user-created posts from local storage
       const userPosts = await getPosts();
       
-      // Hardcoded posts from friends Sarah, Veronica, and Tanya
+      // Hardcoded posts from friends Samantha, Gwen, and Hanna
       const hardcodedPosts: PostWithAuthor[] = [
         {
           id: 'post-1',
           authorId: 'sarah-id',
-          authorName: 'Sarah',
+          authorName: 'Samantha Antonopoulos',
           imageUrls: [
             'https://i.pinimg.com/736x/7e/04/74/7e0474921319d865bbea6f1c9fd4e3d3.jpg',
           ],
@@ -55,7 +55,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
         {
           id: 'post-2',
           authorId: 'veronica-id',
-          authorName: 'Veronica',
+          authorName: 'Gwen Smith',
           imageUrls: [
             'https://i.pinimg.com/736x/08/bf/08/08bf084a3d8e3ac166f39212f70383a4.jpg',
           ],
@@ -66,7 +66,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
         {
           id: 'post-3',
           authorId: 'tanya-id',
-          authorName: 'Tanya',
+          authorName: 'Hanna Rossi',
           imageUrls: [
             'https://i.pinimg.com/736x/37/5b/0c/375b0c6ba3130fd0ea8f1ed6543970de.jpg',
           ],
@@ -77,7 +77,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
         {
           id: 'post-4',
           authorId: 'sarah-id',
-          authorName: 'Sarah',
+          authorName: 'Samantha Antonopoulos',
           imageUrls: [
             'https://i.pinimg.com/736x/d8/a4/fb/d8a4fb60e7f7514d60e560015d06f520.jpg',
           ],
@@ -88,7 +88,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
         {
           id: 'post-5',
           authorId: 'veronica-id',
-          authorName: 'Veronica',
+          authorName: 'Gwen Smith',
           imageUrls: [
             'https://i.pinimg.com/736x/c7/5e/0b/c75e0bdc64e0a4e981a09e009ebfb0c4.jpg',
           ],
@@ -99,7 +99,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
         {
           id: 'post-6',
           authorId: 'tanya-id',
-          authorName: 'Tanya',
+          authorName: 'Hanna Rossi',
           imageUrls: [
             'https://i.pinimg.com/736x/29/e3/88/29e3881dcf77d662087b241169023346.jpg',
           ],
@@ -110,7 +110,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
         {
           id: 'post-7',
           authorId: 'sarah-id',
-          authorName: 'Sarah',
+          authorName: 'Samantha Antonopoulos',
           imageUrls: [
             'https://i.pinimg.com/1200x/d2/c7/b8/d2c7b871788cb23bfa7677a1c27a379e.jpg',
           ],
@@ -121,7 +121,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
         {
           id: 'post-8',
           authorId: 'veronica-id',
-          authorName: 'Veronica',
+          authorName: 'Gwen Smith',
           imageUrls: [
             'https://i.pinimg.com/736x/82/1c/55/821c5528b2233106e228a214d5339ac3.jpg',
           ],
@@ -170,7 +170,7 @@ const FeedListScreen: React.FC<Props> = ({ navigation }) => {
   const renderPost = ({ item }: { item: PostWithAuthor }) => (
     <TouchableOpacity
       style={styles.postCard}
-      onPress={() => navigation.navigate('PostDetail', { postId: item.id })}
+      onPress={() => navigation.navigate('FeedPostItems', { postId: item.id, authorName: item.authorName })}
     >
       <View style={styles.postHeader}>
         <View style={styles.authorInfo}>

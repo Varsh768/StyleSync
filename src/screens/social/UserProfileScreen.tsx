@@ -13,52 +13,52 @@ interface Props {
   route: UserProfileScreenRouteProp;
 }
 
-// HARDCODED: User profiles for Tanya, Veronica, and Sarah
+// HARDCODED: User profiles for Tanya, Veronica, and Zeina
 const MOCK_USER_PROFILES: { [key: string]: User & { bio?: string; closetItemCount?: number; recentItems?: string[] } } = {
   'user-tanya-1': {
     id: 'user-tanya-1',
-    name: 'Tanya',
+    name: 'Tanya Suresh',
     phoneNumber: '+1234567891',
     school: 'UW-Madison',
-    profileImageUrl: 'https://i.pravatar.cc/300?img=1',
+    profileImageUrl: 'https://i.pinimg.com/1200x/06/fa/21/06fa212e8ba50142912f2184a4f33b7d.jpg',
     createdAt: new Date('2024-01-15'),
     contactsImported: true,
     bio: 'Fashion enthusiast 👗 Love sharing my wardrobe with friends!',
     closetItemCount: 24,
-    recentItems: [
+     recentItems: [
       'https://i.pinimg.com/1200x/74/31/9b/74319bdabc1f16ee0637b060beb4e136.jpg',
-      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400',
-      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400',
-      'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400',
-      'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400',
-      'https://images.unsplash.com/photo-1596783074918-c84cb06531ca?w=400',
+      'https://i.pinimg.com/736x/7f/e1/3e/7fe13eea3872019c31f90351a211a3b4.jpg',
+      'https://i.pinimg.com/736x/ee/95/fb/ee95fb8dc967971ea2f2f6f4d1f7e7ba.jpg',
+      'https://i.pinimg.com/1200x/16/37/26/16372660152d3110f7052a4cfd51cac8.jpg',
+      'https://i.pinimg.com/736x/e4/5f/f7/e45ff70d4e38921d1056ca80a2e470e5.jpg',
+      'https://i.pinimg.com/736x/99/1f/28/991f28d124f3d6ee50b0012de756b380.jpg',
     ],
   },
   'user-veronica-1': {
     id: 'user-veronica-1',
-    name: 'Veronica',
+    name: 'Veronica Jones',
     phoneNumber: '+1234567892',
     school: 'UW-Madison',
-    profileImageUrl: 'https://i.pravatar.cc/300?img=5',
+    profileImageUrl: 'https://i.pinimg.com/736x/7d/0b/de/7d0bdece3a8a35145987643040aa133e.jpg',
     createdAt: new Date('2024-02-10'),
     contactsImported: true,
     bio: 'Always hunting for the perfect outfit ✨',
     closetItemCount: 18,
-    recentItems: [
+     recentItems: [
       'https://i.pinimg.com/736x/cb/31/15/cb3115f78656d74501dde4ae6c396423.jpg',
       'https://i.pinimg.com/736x/c2/fb/c3/c2fbc332f1e556fabdcbed0c4e0924a6.jpg',
       'https://i.pinimg.com/736x/2b/7a/32/2b7a3202925f1a70c176186c0f2b2fa5.jpg',
       'https://i.pinimg.com/736x/94/b9/62/94b962da1ed23fc2cfa3b500d6af9972.jpg',
-      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400',
-      'https://images.unsplash.com/photo-1550614000-4895a10e1bfd?w=400',
+      'https://i.pinimg.com/736x/f0/b2/82/f0b2827cfc04b329fae54fdd11c2a939.jpg',
+      'https://i.pinimg.com/736x/56/55/0c/56550c2d95c23837f2f249268cb774ba.jpg',
     ],
   },
-  'user-sarah-1': {
-    id: 'user-sarah-1',
-    name: 'Sarah',
+  'user-zeina-1': {
+    id: 'user-zeina-1',
+    name: 'Zeina Mahmoud',
     phoneNumber: '+1234567893',
     school: 'UW-Madison',
-    profileImageUrl: 'https://i.pravatar.cc/300?img=9',
+    profileImageUrl: 'https://i.pinimg.com/736x/bb/2d/d0/bb2dd04187c87185ab38f837e0670a0b.jpg',
     createdAt: new Date('2024-01-20'),
     contactsImported: true,
     bio: 'Sustainable fashion advocate 🌱 Happy to share!',
@@ -132,7 +132,15 @@ const UserProfileScreen: React.FC<Props> = ({ navigation, route }) => {
           <Ionicons name="shirt-outline" size={20} color="#fff" />
           <Text style={styles.primaryButtonText}>View Closet</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.secondaryButton}>
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={() => {
+            navigation.navigate('Messages', {
+              userId: userProfile.id,
+              userName: userProfile.name,
+            });
+          }}
+        >
           <Ionicons name="chatbubble-outline" size={20} color="#007AFF" />
           <Text style={styles.secondaryButtonText}>Message</Text>
         </TouchableOpacity>

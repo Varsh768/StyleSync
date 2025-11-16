@@ -81,6 +81,7 @@ export type SocialStackParamList = {
   UserProfile: { userId: string };
   GroupDetail: { groupId: string; groupName: string };
   FriendCloset: { friendId: string; friendName: string };
+  Messages: { userId: string; userName: string };
 };
 
 export type NotificationsStackParamList = {
@@ -99,6 +100,7 @@ export type FeedStackParamList = {
   FeedList: undefined;
   CreatePost: undefined;
   PostDetail: { postId: string };
+  FeedPostItems: { postId: string; authorName?: string };
 };
 
 export type RequestsStackParamList = {
