@@ -66,14 +66,6 @@ const ClosetNavigator = () => (
       options={{ title: 'Edit Item', headerRight: () => <NotificationHeader /> }}
     />
     <ClosetStack.Screen
-      name="FriendCloset"
-      component={FriendClosetScreen}
-      options={({ route }) => ({
-        title: `${route.params.friendName}'s Closet`,
-        headerRight: () => <NotificationHeader />,
-      })}
-    />
-    <ClosetStack.Screen
       name="ItemDetail"
       component={ItemDetailScreen}
       options={{ title: 'Item Details', headerRight: () => <NotificationHeader /> }}
@@ -188,6 +180,14 @@ const SocialNavigator = () => (
       component={GroupDetailScreen}
       options={({ route }) => ({
         title: route.params.groupName,
+        headerRight: () => <NotificationHeader />,
+      })}
+    />
+    <SocialStack.Screen
+      name="FriendCloset"
+      component={FriendClosetScreen}
+      options={({ route }) => ({
+        title: `${route.params.friendName}'s Closet`,
         headerRight: () => <NotificationHeader />,
       })}
     />

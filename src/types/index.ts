@@ -80,6 +80,7 @@ export type SocialStackParamList = {
   JoinCommunity: undefined;
   UserProfile: { userId: string };
   GroupDetail: { groupId: string; groupName: string };
+  FriendCloset: { friendId: string; friendName: string };
 };
 
 export type NotificationsStackParamList = {
@@ -91,7 +92,6 @@ export type ClosetStackParamList = {
   MyCloset: undefined;
   AddItem: undefined;
   EditItem: { itemId: string };
-  FriendCloset: { friendId: string; friendName: string };
   ItemDetail: { itemId: string; friendId?: string };
 };
 

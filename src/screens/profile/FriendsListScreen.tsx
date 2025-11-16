@@ -80,8 +80,8 @@ const FriendsListScreen: React.FC<Props> = ({ navigation }) => {
     <TouchableOpacity
       style={styles.friendCard}
       onPress={() => {
-        // Navigate to friend's closet
-        (navigation as any).navigate('Closet', {
+        // Navigate to friend's closet via Social tab
+        (navigation as any).navigate('Social', {
           screen: 'FriendCloset',
           params: { friendId: item.id, friendName: item.name },
         });

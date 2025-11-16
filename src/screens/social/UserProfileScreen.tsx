@@ -119,7 +119,16 @@ const UserProfileScreen: React.FC<Props> = ({ navigation, route }) => {
       </View>
 
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.primaryButton}>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={() => {
+            // Navigate to friend's closet within the Social stack
+            navigation.navigate('FriendCloset', {
+              friendId: userProfile.id,
+              friendName: userProfile.name,
+            });
+          }}
+        >
           <Ionicons name="shirt-outline" size={20} color="#fff" />
           <Text style={styles.primaryButtonText}>View Closet</Text>
         </TouchableOpacity>
